@@ -45,4 +45,4 @@ gulp.task('serve', function() {
   });
 });
 
-gulp.task('default', ['browserify', 'watch', 'serve']);
+gulp.task('default', ['browserify', 'moveIndex', 'watch', 'serve']);
