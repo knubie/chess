@@ -5,6 +5,7 @@ var util = require('util');
 var _ = require('lodash');
 
 function Pawn() {
+  this.parlett = 'dn+';
   Piece.apply(this, arguments);
 }
-util.inherits(Pawn, Piece);
+Pawn.prototype = Object.create(Piece.prototype);
