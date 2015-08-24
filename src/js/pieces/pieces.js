@@ -1,6 +1,6 @@
 module.exports = {
   pawn: {
-    klass: require('pieces/Pawn.js'),
+    klass: require('./Pawn'),
     sprite: 'assets/images/pawn.png'
   }
 };

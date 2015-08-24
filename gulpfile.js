@@ -12,7 +12,7 @@ var b = watchify(browserify({
   cache: {},
   packageCache: {},
   entries: ['./src/js/index.js'],
-  debug: false
+  debug: true
 }));
 
 gulp.task('browserify', bundle);

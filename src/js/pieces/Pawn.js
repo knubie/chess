@@ -1,6 +1,6 @@
 module.exports = Pawn;
 
-var Piece = require('pieces/Piece');
+var Piece = require('./Piece');
 var util = require('util');
 var _ = require('lodash');
 

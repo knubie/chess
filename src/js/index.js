@@ -1,1 +1,1 @@
-window.Pawn = require('pieces/Pawn');
+window.Pawn = require('./pieces/Pawn');
