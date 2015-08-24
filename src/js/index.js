@@ -1,4 +1,3 @@
-var Pawn = require('./pieces/Pawn');
 var Board = require('./Board');
 
 window.board = new Board({
