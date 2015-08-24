@@ -1,10 +1,11 @@
-var gulp = require("gulp");
+var gulp = require('gulp');
 
 // Browserify
 var watchify = require('watchify');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var connect = require('gulp-connect');
 
 // Browserify maps js
 var b = watchify(browserify({
@@ -24,6 +25,16 @@ function bundle() {
     .pipe(gulp.dest('./pub/js'));
 }
 
-gulp.task("watch", function(){
+gulp.task('watch', function(){
   bundle();
-}
+});
+
+gulp.task('serve', function() {
+  connect.server({
+    root: 'pub/',
+    host: '0.0.0.0',
+    port: 1337
+  });
+});
+
+gulp.task('default', ['watch', 'serve']);
