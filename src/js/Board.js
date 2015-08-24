@@ -4,10 +4,7 @@ var _ = require('lodash');
 var pieces = require('./pieces/pieces');
 
 var optionDefaults = {
-  size: {
-    width: 8,
-    height: 8
-  }
+  size: 10
 };
 
 function Board(_options) {
@@ -16,23 +13,27 @@ function Board(_options) {
   _.extend(this, _.defaultsDeep(_options, optionDefaults));
 
   _.forEach(['white', 'black'], function(color) {
-    _.map(this[color], function(piece) {
-      return new pieces[piece.name].c(_this, piece);
+    _this[color] = _.map(_this[color], function(piece) {
+      return new pieces[piece.name].klass(_this, piece);
     })
   });
 
 
-  if (this.options.size === undefined) {
+  if (this.size === undefined) {
     // TODO: Throw error
   }
 }
 
 Board.prototype.pieces = function() {
-  return Array.prototype.call(null, this.white, this.black);
+  return Array.prototype.concat.call([], this.white, this.black);
 }
 
-Board.prototype.getPieceAtPosition = function(x, y) {
+Board.prototype.getPieceAtPosition = function(position) {
   return _.filter(this.pieces(), function(piece) {
-    return piece.position.x === x && piece.position.y === y;
+    return piece.position.x === position.x && piece.position.y === position.y;
   })[0];
+};
+
+Board.prototype.legalPosition = function(position) {
+  return position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size;
 };
