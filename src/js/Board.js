@@ -1,7 +1,7 @@
 module.exports = Board;
 
 var _ = require('lodash');
-var pieces = require('pieces');
+var pieces = require('./pieces/pieces');
 
 var optionDefaults = {
   size: {

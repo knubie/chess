@@ -16,17 +16,25 @@ var b = watchify(browserify({
 }));
 
 gulp.task('browserify', bundle);
+
 b.on('update', bundle);
 
 function bundle() {
   return b.bundle()
+    .on('error', function(err) {
+      console.log(err.message);
+    })
     .pipe(source('bundle.js'))
     .pipe(buffer())
     .pipe(gulp.dest('./pub/js'));
 }
 
+gulp.task('moveIndex', function() {
+  return gulp.src('./src/index.html').pipe(gulp.dest('./pub/'));
+});
+
 gulp.task('watch', function(){
-  bundle();
+  gulp.watch('./src/index.html', ['moveIndex']);
 });
 
 gulp.task('serve', function() {
@@ -37,4 +45,4 @@ gulp.task('serve', function() {
   });
 });
 
-gulp.task('default', ['watch', 'serve']);
+gulp.task('default', ['browserify', 'watch', 'serve']);

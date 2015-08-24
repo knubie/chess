@@ -1,6 +1,9 @@
 var Pawn = require('./pieces/Pawn');
 var Board = require('./Board');
 
+console.log(Pawn, Board);
+
+/*
 window.board = new Board({
   white: [
     {
@@ -15,6 +18,7 @@ window.board = new Board({
     }
   ]
 });
+*/
 
 //var pawn = new Pawn(board, {x: 1, y:1});
 
