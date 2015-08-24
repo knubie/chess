@@ -9,7 +9,7 @@ var optionDefaults = {
 var id = 0;
 
 function Piece(_board, _options) {
-  this.options = _.defaultsDeep(_options, optionDefaults);
+  _.extend(this, _.defaultsDeep(_options, optionDefaults));
   this.board = _board;
   this.id = ++id;
 
