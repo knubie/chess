@@ -1,4 +1,5 @@
 var _     = require('lodash');
+var R     = require('ramda');
 var Board = require('../src/js/Board');
 
 var board = new Board({
@@ -14,7 +15,23 @@ var board = new Board({
 
 describe('Pieces', function() {
   it('should return all possible moves', function() {
-    var arr = board.pieces()[0].possibleMoves()
+
+    // :: ([position], [position], Number) -> Boolean
+    var compare = function(arr1, arr2, i) {
+      var i = i || 0;
+      var position = arr1[i];
+      if ( R.any(R.equals(position), arr2) ) { 
+        if (i === arr1.length - 1 && arr2.length === 1) {
+          return true;
+        } else {
+          return compare(arr1, R.remove(R.indexOf(position, arr2), 1, arr2), i + 1);
+        }
+      } else {
+        return false
+      }
+    }
+
+    var actualMoves = board.pieces()[0].possibleMoves()
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
@@ -31,20 +48,7 @@ describe('Pieces', function() {
       {y: 4, x: 6},
       {y: 4, x: 7}
     ];
-    var allFound = true;
-    _.forEach(expectedMoves, function(n) {
-      var found = false;
-      _.forEach(arr, function(nn, i) {
-        if ( n.x === nn.x && n.y === nn.y ) {
-          found = true;
-          arr.splice(i, 1);
-          return false;
-        }
-      });
-      if (!found) { allFound = false; }
-    });
-    expect(arr.length).toEqual(0);
-    expect(allFound).toBe(true);
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
 });
