@@ -54,39 +54,38 @@ Piece.prototype.getOrthogonal = function(distance) {
   });
 
   var getPieceAtPosition = R.curry(function(board, position) {
-    return _.filter(board.pieces(), function(piece) {
-      return piece.position.x === position.x && piece.position.y === position.y;
-    })[0];
+    return R.find( R.propEq('position', position), board.pieces());
+    //R.propEq('position', position, piece);
+    //return _.filter(board.pieces(), function(piece) {
+      //return piece.position.x === position.x && piece.position.y === position.y;
+    //})[0];
   });
 
   // Filter out falsey values.
   // The identity returns its parameter,
   // hence if parameter is falsey it will return falsey.
   return R.filter(R.identity, R.flatten(
-    _.map(['x', 'y'], function(axis) {
-      return _.map([1, -1], function(direction) {
-        // TODO: range exceeds board size
-        var range = _.range(_this.position[axis] + direction, _this.position[axis] + ((distance + 1) * direction), direction);
-        return _.map(range, function(i) {
-          var position = getPosition(axis, i);
+    R.map(function(axis) {
+      return R.map(function(i) {
+        var inBetween = i < _this.position[axis]
+                      ? R.range(i, _this.position[axis])
+                      : R.range(_this.position[axis] + 1, i + 1);
 
-          var inBetween = _.range(i, _this.position[axis], R.negate(direction));
-          var blockingPieces = R.any(
-            R.compose(
-              getPieceAtPosition(_this.board),
-              getPosition(axis)
-            ), inBetween);
+        var blockingPieces = R.any(
+          R.compose(
+            getPieceAtPosition(_this.board),
+            getPosition(axis)
+          ), inBetween);
 
-          // TODO: moveType check
-          if (blockingPieces) {
-            // TODO: check if piece is opposite color, add to captures
-            return false; // Gets filtered out.
-          } else if (_this.board.legalPosition(position)) {
-            return position;
-          } // If not legal position returns undefined, gets filtered out.
-        });
-      });
-    })
+        // TODO: moveType check
+        if (blockingPieces) {
+          // TODO: check if piece is opposite color, add to captures
+          return false; // Gets filtered out.
+        } else {
+          return getPosition(axis, i);
+        }
+      }, R.concat(R.range(0, _this.position[axis]), R.range(_this.position[axis] + 1, _this.board.size))); // range
+    }, ['x', 'y'])
   ));
 }
 
