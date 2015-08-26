@@ -1,4 +1,3 @@
-var _     = require('lodash');
 var R     = require('ramda');
 var Board = require('../src/js/Board');
 
@@ -33,7 +32,7 @@ describe('Pieces', function() {
       black: []
     });
 
-    var actualMoves = board.pieces()[0].possibleMoves()
+    var actualMoves = board.pieces()[0].possibleMoves();
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
@@ -49,6 +48,26 @@ describe('Pieces', function() {
       {y: 4, x: 5},
       {y: 4, x: 6},
       {y: 4, x: 7}
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+
+    board.white[0].position = {x: 0, y: 7}
+    var actualMoves = board.pieces()[0].possibleMoves();
+    var expectedMoves = [
+      {x: 0, y: 0},
+      {x: 0, y: 1},
+      {x: 0, y: 2},
+      {x: 0, y: 3},
+      {x: 0, y: 4},
+      {x: 0, y: 5},
+      {x: 0, y: 6},
+      {y: 7, x: 1},
+      {y: 7, x: 2},
+      {y: 7, x: 3},
+      {y: 7, x: 4},
+      {y: 7, x: 5},
+      {y: 7, x: 6},
+      {y: 7, x: 7}
     ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
@@ -86,6 +105,8 @@ describe('Pieces', function() {
       {y: 4, x: 6},
       {y: 4, x: 7}
     ];
+
+    //console.log(actualMoves);
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
