@@ -63,7 +63,7 @@ Piece.prototype.getOrthogonal = function(distance) {
   return R.filter(R.identity, R.flatten(
     R.map(function(axis) {
       var min = Math.max(_this.position[axis] - distance, 0)
-      var max = Math.min(_this.position[axis] + distance, _this.board.size)
+      var max = Math.min(_this.position[axis] + distance + 1, _this.board.size)
       return R.map(function(i) {
         var inBetween = i < _this.position[axis]
                       ? R.range(i, _this.position[axis])
