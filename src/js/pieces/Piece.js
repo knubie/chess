@@ -55,10 +55,6 @@ Piece.prototype.getOrthogonal = function(distance) {
 
   var getPieceAtPosition = R.curry(function(board, position) {
     return R.find( R.propEq('position', position), board.pieces());
-    //R.propEq('position', position, piece);
-    //return _.filter(board.pieces(), function(piece) {
-      //return piece.position.x === position.x && piece.position.y === position.y;
-    //})[0];
   });
 
   // Filter out falsey values.
@@ -66,6 +62,8 @@ Piece.prototype.getOrthogonal = function(distance) {
   // hence if parameter is falsey it will return falsey.
   return R.filter(R.identity, R.flatten(
     R.map(function(axis) {
+      var min = Math.max(_this.position[axis] - distance, 0)
+      var max = Math.min(_this.position[axis] + distance, _this.board.size)
       return R.map(function(i) {
         var inBetween = i < _this.position[axis]
                       ? R.range(i, _this.position[axis])
@@ -84,7 +82,8 @@ Piece.prototype.getOrthogonal = function(distance) {
         } else {
           return getPosition(axis, i);
         }
-      }, R.concat(R.range(0, _this.position[axis]), R.range(_this.position[axis] + 1, _this.board.size))); // range
+        // TODO: limit this to distance
+      }, R.concat(R.range(min, _this.position[axis]), R.range(_this.position[axis] + 1, max)));
     }, ['x', 'y'])
   ));
 }
