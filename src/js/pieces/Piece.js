@@ -31,7 +31,6 @@ Piece.prototype.possibleMoves = function() {
 
       switch(direction) {
         case '+':
-          // TODO: remove duplicates
           possibilities = R.uniq(possibilities.concat(_this.getOrthogonal(distance)));
           break;
       }
@@ -47,28 +46,48 @@ Piece.prototype.getOrthogonal = function(distance) {
 
   distance = distance === 'n' ? _this.board.size - 1 : parseInt(distance);
 
-  var possibilities = [];
-
-  _.forEach(['x', 'y'], function(axis) {
-    _.forEach([1, -1], function(direction) {
-      var range = _.range(_this.position[axis] + direction, _this.position[axis] + ((distance + 1) * direction), direction);
-      _.forEach(range, function(i) {
-        var position = {
-          x: (axis === 'x') ? i : _this.position.x,
-          y: (axis === 'y') ? i : _this.position.y
-        };
-
-        // TODO: moveType check
-        if (_this.board.getPieceAtPosition(position) !== undefined) {
-          return false;
-        } else if (_this.board.legalPosition(position)) {
-          possibilities.push(position);
-        }
-      })
-    });
+  var getPosition = R.curry(function(axis, i) {
+    return {
+      x: (axis === 'x') ? i : _this.position.x,
+      y: (axis === 'y') ? i : _this.position.y
+    };
   });
 
-  return possibilities;
+  var getPieceAtPosition = R.curry(function(board, position) {
+    return _.filter(board.pieces(), function(piece) {
+      return piece.position.x === position.x && piece.position.y === position.y;
+    })[0];
+  });
+
+  // Filter out falsey values.
+  // The identity returns its parameter,
+  // hence if parameter is falsey it will return falsey.
+  return R.filter(R.identity, R.flatten(
+    _.map(['x', 'y'], function(axis) {
+      return _.map([1, -1], function(direction) {
+        // TODO: range exceeds board size
+        var range = _.range(_this.position[axis] + direction, _this.position[axis] + ((distance + 1) * direction), direction);
+        return _.map(range, function(i) {
+          var position = getPosition(axis, i);
+
+          var inBetween = _.range(i, _this.position[axis], R.negate(direction));
+          var blockingPieces = R.any(
+            R.compose(
+              getPieceAtPosition(_this.board),
+              getPosition(axis)
+            ), inBetween);
+
+          // TODO: moveType check
+          if (blockingPieces) {
+            // TODO: check if piece is opposite color, add to captures
+            return false; // Gets filtered out.
+          } else if (_this.board.legalPosition(position)) {
+            return position;
+          } // If not legal position returns undefined, gets filtered out.
+        });
+      });
+    })
+  ));
 }
 
 Piece.prototype.possibleCaptures = function() { };
