@@ -1,6 +1,5 @@
 var R = require('ramda');
-var Board = require('../Board');
-console.log(Board);
+var Board = require('../board/Board');
 
 var getOrthogonal = function(piece, board, distance) {
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);

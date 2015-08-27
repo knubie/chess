@@ -1,6 +1,5 @@
 module.exports = {
-  pawn: {
-    klass: require('./Pawn'),
-    sprite: 'assets/images/pawn.png'
+  'rook': {
+    _new: require('./Rook')._new
   }
 };

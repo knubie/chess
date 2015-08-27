@@ -1,5 +1,6 @@
 var R     = require('ramda');
-var Board = require('../src/js/Board');
+var Board = require('../src/js/board/Board');
+var pieces = require('../src/js/pieces/pieces');
 
 // 4412
 
@@ -25,11 +26,12 @@ describe('Pieces', function() {
       size: 8,
       white: [
         {
-          name: 'pawn',
+          name: 'rook',
           position: {x: 4, y: 4}
         }
       ],
-      black: []
+      black: [],
+      pieces: pieces
     });
 
     var actualMoves = Board.pieces(board)[0].possibleMoves();
@@ -78,16 +80,17 @@ describe('Pieces', function() {
       size: 8,
       white: [
         {
-          name: 'pawn',
+          name: 'rook',
           position: {x: 4, y: 4}
         }
       ],
       black: [
         {
-          name: 'pawn',
+          name: 'rook',
           position: {x: 4, y: 6}
         }
-      ]
+      ],
+      pieces: pieces
     });
 
     var actualMoves = Board.pieces(board)[0].possibleMoves()

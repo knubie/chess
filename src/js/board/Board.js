@@ -1,12 +1,8 @@
 var R = require('ramda');
 
-var pieces = require('./pieces/pieces');
-
 var optionDefaults = {
   size: 10
 };
-
-// TODO: Remove circular dependancy
 
 var Board = {
   _new: R.curry(function(_options) {
@@ -17,8 +13,8 @@ var Board = {
 
     R.forEach(function(color) {
       _self[color] = R.map(function(piece) {
-        return new pieces[piece.name].klass(_self, piece);
-      }, _self[color])
+        return _options.pieces[piece.name]._new(piece);
+      }, _self[color]);
     }, ['white', 'black']);
 
     return _self;
