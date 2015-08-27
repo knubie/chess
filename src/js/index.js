@@ -16,6 +16,9 @@ window.board = Board._new({
 });
 
 // listPossibleMoves(board);
+
+window.Board = Board;
+window.Piece = Piece;
 console.log(Board.pieces(board));
 
 console.log(Board);

@@ -34,7 +34,9 @@ describe('Pieces', function() {
       pieces: pieces
     });
 
-    var actualMoves = Board.pieces(board)[0].possibleMoves();
+    var piece = Board.pieces(board)[0];
+
+    var actualMoves = piece.possibleMoves(piece);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
@@ -54,8 +56,8 @@ describe('Pieces', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
     board.white[0].position = {x: 0, y: 7}
-    var actualMoves = Board.pieces(board)[0].possibleMoves();
-    var expectedMoves = [
+    actualMoves = piece.possibleMoves(piece);
+    expectedMoves = [
       {x: 0, y: 0},
       {x: 0, y: 1},
       {x: 0, y: 2},
@@ -93,7 +95,9 @@ describe('Pieces', function() {
       pieces: pieces
     });
 
-    var actualMoves = Board.pieces(board)[0].possibleMoves()
+    var piece = Board.pieces(board)[0];
+
+    var actualMoves = piece.possibleMoves(piece);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},

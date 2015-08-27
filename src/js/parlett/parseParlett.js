@@ -46,8 +46,9 @@ var directions = {
   '+': getOrthogonal
 };
 
-var parseParlett = R.curry(function(parlett, piece, board) {
+var parseParlett = R.curry(function(board, piece) {
   var possibilities = [];
+  var parlett = piece.parlett;
 
   R.forEach(function(rule) {
     if (parlett.condition !== 'c') {

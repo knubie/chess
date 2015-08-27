@@ -13,7 +13,7 @@ var Board = {
 
     R.forEach(function(color) {
       _self[color] = R.map(function(piece) {
-        return _options.pieces[piece.name]._new(piece);
+        return _options.pieces[piece.name]._new(piece, _self);
       }, _self[color]);
     }, ['white', 'black']);
 

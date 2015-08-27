@@ -10,7 +10,7 @@ var Rook = {
       }]
     };
 
-    _self = Piece._new(_self);
+    _self = R.merge(_self, R.apply(Piece._new, R.concat([_self], Array.prototype.slice.call(arguments))));
 
     return _self;
   }
