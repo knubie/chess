@@ -1,39 +1,40 @@
-module.exports = Board;
+var R = require('ramda');
 
-var _ = require('lodash');
 var pieces = require('./pieces/pieces');
 
 var optionDefaults = {
   size: 10
 };
 
-function Board(_options) {
-  var _this = this;
+// TODO: Remove circular dependancy
 
-  _.extend(this, _.defaultsDeep(_options, optionDefaults));
+var Board = {
+  _new: R.curry(function(_options) {
+    var _self = {};
 
-  _.forEach(['white', 'black'], function(color) {
-    _this[color] = _.map(_this[color], function(piece) {
-      return new pieces[piece.name].klass(_this, piece);
-    })
-  });
+    // TODO: Check for null options
+    _self = R.merge(_self, R.merge(optionDefaults, _options));
 
+    R.forEach(function(color) {
+      _self[color] = R.map(function(piece) {
+        return new pieces[piece.name].klass(_self, piece);
+      }, _self[color])
+    }, ['white', 'black']);
 
-  if (this.size === undefined) {
-    // TODO: Throw error
-  }
-}
-
-Board.prototype.pieces = function() {
-  return Array.prototype.concat.call([], this.white, this.black);
-}
-
-Board.prototype.getPieceAtPosition = function(position) {
-  return _.filter(this.pieces(), function(piece) {
-    return piece.position.x === position.x && piece.position.y === position.y;
-  })[0];
+    return _self;
+  })
 };
 
-Board.prototype.legalPosition = function(position) {
-  return position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size;
-};
+Board.pieces = R.curry(function(_self) {
+  return Array.prototype.concat.call([], _self.white, _self.black);
+});
+
+Board.getPieceAtPosition = R.curry(function(_self, position) {
+  return R.find(R.propEq('position', position), Board.pieces(_self));
+});
+
+Board.legalPosition = R.curry(function(_self, position) {
+  return position.x >= 0 && position.x < _self.size && position.y >= 0 && position.y < _self.size;
+});
+
+module.exports = Board;

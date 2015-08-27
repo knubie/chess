@@ -1,6 +1,7 @@
 var Board = require('./Board');
+var R = require('ramda');
 
-window.board = new Board({
+window.board = Board._new({
   white: [
     {
       name: 'pawn',
@@ -10,11 +11,7 @@ window.board = new Board({
   black: []
 });
 
+// listPossibleMoves(board);
+console.log(Board.pieces(board));
 
-console.log(board.pieces()[0].possibleMoves());
-
-//var pawn = new Pawn(board, {x: 1, y:1});
-
-//board.pieces.push(pawn);
-
-
+console.log(Board);
