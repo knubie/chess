@@ -22,7 +22,7 @@ var compare = function(arr1, arr2, i) {
 
 describe('Pieces', function() {
   it('should return all possible moves on an empty board', function() {
-    var board = {
+    var board = new Board({
       size: 8,
       white: [
         {
@@ -31,7 +31,7 @@ describe('Pieces', function() {
         }
       ],
       black: [],
-    };
+    });
 
     var piece = board.white[0];
     var actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
@@ -79,7 +79,7 @@ describe('Pieces', function() {
   });
 
   it('pieces should block other pieces', function() {
-    var board = {
+    var board = new Board({
       size: 8,
       white: [
         {
@@ -93,7 +93,7 @@ describe('Pieces', function() {
           position: {x: 4, y: 6}
         }
       ],
-    };
+    });
 
     var piece = board.white[0];
     var actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
@@ -111,8 +111,6 @@ describe('Pieces', function() {
       {y: 4, x: 6},
       {y: 4, x: 7}
     ];
-
-    //console.log(actualMoves);
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });

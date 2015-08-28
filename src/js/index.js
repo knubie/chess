@@ -4,7 +4,7 @@ var pieces = require('../src/js/pieces');
 
 var R = require('ramda');
 
-window.board = {
+window.board = new Board({
   size: 8,
   white: [
     {
@@ -13,13 +13,13 @@ window.board = {
     }
   ],
   black: [],
-};
+});
 
 var piece = board.white[0];
 var possibleMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
 
-// var selectedPiece = getSelectedPiece(event);
-//var possibleMoves = move.getMoves(board, selectedPiece.position, pieces[selectedPiece.name].parlett);
+// var p = getSelectedPiece(event);
+//var possibleMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
 //var IO.renderPossibleMoves(possibleMoves);
 //R.prop('position')
 //R.prop('parlett', pieces[selectedPiece.name])
