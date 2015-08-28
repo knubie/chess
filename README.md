@@ -11,7 +11,7 @@ In his book The Oxford History of Board Games[3] David Parlett used a notation t
 	- * – orthogonally or diagonally (all eight possible directions)
 	- + – orthogonally (four possible directions)
 	- > – orthogonally forwards
-	- < – orthogo 		 	nally backwards
+	- < – orthogonally backwards
 	- <> – orthogonally forwards and backwards
 	- = – orthogonally sideways (used here instead of Parlett's divide symbol.)
 	- >= – orthogonally forwards or sideways

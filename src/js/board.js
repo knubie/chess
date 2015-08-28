@@ -1,24 +1,8 @@
 var R = require('ramda');
 
-var optionDefaults = {
-  size: 10
-};
-
-var Board = {
-  _new: R.curry(function(_options) {
-    var _self = {};
-
-    // TODO: Check for null options
-    _self = R.merge(_self, R.merge(optionDefaults, _options));
-
-    R.forEach(function(color) {
-      _self[color] = R.map(function(piece) {
-        return _options.pieces[piece.name]._new(piece, _self);
-      }, _self[color]);
-    }, ['white', 'black']);
-
-    return _self;
-  })
+var Board = {};
+Board.validate = function(_self) {
+  // Validate the Board data structure.
 };
 
 Board.pieces = R.curry(function(_self) {

@@ -1,6 +1,7 @@
 var R     = require('ramda');
-var Board = require('../src/js/board/Board');
-var pieces = require('../src/js/pieces/pieces');
+var Board = require('../src/js/board');
+var pieces = require('../src/js/pieces');
+var move = require('../src/js/move');
 
 // 4412
 
@@ -21,8 +22,7 @@ var compare = function(arr1, arr2, i) {
 
 describe('Pieces', function() {
   it('should return all possible moves on an empty board', function() {
-
-    var board = Board._new({
+    var board = {
       size: 8,
       white: [
         {
@@ -31,12 +31,12 @@ describe('Pieces', function() {
         }
       ],
       black: [],
-      pieces: pieces
-    });
+    };
 
-    var piece = Board.pieces(board)[0];
+    var piece = board.white[0];
+    var actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
 
-    var actualMoves = piece.possibleMoves(piece);
+    //var actualMoves = piece.possibleMoves(piece);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
@@ -53,10 +53,12 @@ describe('Pieces', function() {
       {y: 4, x: 6},
       {y: 4, x: 7}
     ];
+
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
-    board.white[0].position = {x: 0, y: 7}
-    actualMoves = piece.possibleMoves(piece);
+    piece.position = {x: 0, y: 7}
+    actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
+    //actualMoves = piece.possibleMoves(piece);
     expectedMoves = [
       {x: 0, y: 0},
       {x: 0, y: 1},
@@ -77,8 +79,7 @@ describe('Pieces', function() {
   });
 
   it('pieces should block other pieces', function() {
-
-    var board = Board._new({
+    var board = {
       size: 8,
       white: [
         {
@@ -92,12 +93,10 @@ describe('Pieces', function() {
           position: {x: 4, y: 6}
         }
       ],
-      pieces: pieces
-    });
+    };
 
-    var piece = Board.pieces(board)[0];
-
-    var actualMoves = piece.possibleMoves(piece);
+    var piece = board.white[0];
+    var actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
@@ -116,7 +115,6 @@ describe('Pieces', function() {
     //console.log(actualMoves);
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
-
   });
 
 });
