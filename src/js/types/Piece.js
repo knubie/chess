@@ -1,7 +1,6 @@
 var R = require('ramda');
-var Errors = require('./errors');
-var Types = require('./lib/types');
-var Position = require('./position');
+var Errors = require('../errors');
+var Position = require('./Position');
 
 var Piece = function(opts) {
   if (typeof opts != 'object'
@@ -11,8 +10,15 @@ var Piece = function(opts) {
     throw new Errors.TypeClassError('Invalid Piece options.');
   }
   for (k in opts) { this[k] = opts[k] };
+  var pieces = {
+    'rook': {
+      parlett: [{
+        direction: '+',
+        distance: 'n'
+      }]
+    }
+  };
+  this.parlett = pieces[opts.name].parlett
 }
-
-var checkType = Types.check(Piece);
 
 module.exports = Piece;

@@ -1,11 +1,10 @@
-var R     = require('ramda');
-var Board = require('../src/js/board');
-var Piece = require('../src/js/piece');
-var Position = require('../src/js/position');
-var pieces = require('../src/js/pieces');
-var move = require('../src/js/move');
+var R        = require('ramda');
+var Board    = require('../src/js/types/Board');
+var Piece    = require('../src/js/types/Piece');
+var Position = require('../src/js/types/Position');
+var Chess    = require('../src/js/chess.js')
 
-// 4412
+console.log(Board);
 
 // :: ([position], [position], Number) -> Boolean
 var compare = function(arr1, arr2, i) {
@@ -36,7 +35,7 @@ describe('Pieces', function() {
     });
 
     var p = board.pieces[0];
-    var actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
+    var actualMoves = Chess.getMoves(board, p);
 
     //var actualMoves = piece.possibleMoves(piece);
     var expectedMoves = [
@@ -59,7 +58,7 @@ describe('Pieces', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
     p.position = {x: 0, y: 7}
-    actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
+    actualMoves = Chess.getMoves(board, p);
     //actualMoves = piece.possibleMoves(piece);
     expectedMoves = [
       {x: 0, y: 0},
@@ -98,7 +97,7 @@ describe('Pieces', function() {
     });
 
     var p = board.pieces[0];
-    var actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
+    var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},

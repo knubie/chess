@@ -1,6 +1,5 @@
 var R = require('ramda');
-var Errors = require('./errors');
-var Types = require('./lib/types');
+var Errors = require('../errors');
 
 var Position = function(opts) {
   if (typeof opts != 'object'
@@ -11,7 +10,4 @@ var Position = function(opts) {
   for (k in opts) { this[k] = opts[k] };
 }
 
-var checkType = Types.check(Position);
-
 module.exports = Position;
-

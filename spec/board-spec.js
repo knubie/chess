@@ -1,9 +1,8 @@
-var R     = require('ramda');
-var Board = require('../src/js/board');
-var Piece = require('../src/js/piece');
-var Position = require('../src/js/position');
-var pieces = require('../src/js/pieces');
-var move = require('../src/js/move');
+var R        = require('ramda');
+var Board    = require('../src/js/types/Board');
+var Piece    = require('../src/js/types/Piece');
+var Position = require('../src/js/types/Position');
+var Chess    = require('../src/js/chess.js')
 
 describe('Board', function() {
   it('movePiece should return a new board with the updated pieces', function() {
@@ -29,7 +28,7 @@ describe('Board', function() {
       ],
     });
 
-    var actualBoard = Board.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
 
     expect(R.equals(expectedBoard, actualBoard)).toBe(true);
   });
@@ -47,17 +46,7 @@ describe('Board', function() {
     });
 
     var expectedBoard = null; 
-    var endingPosition = new Position({x: 6, y:6});
-
-    var possibleMoves = move.getMoves(board, startingPosition, pieceLookup[piece.name].parlett);
-
-    if (R.any(R.equals(endingPosition), possiblemoves)) {
-      var actualBoard = Board.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
-    }
-
-
-
-    var actualBoard = Board.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
+    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
 
     expect(R.equals(expectedBoard, actualBoard)).toBe(true);
   });
