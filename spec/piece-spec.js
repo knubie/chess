@@ -1,5 +1,7 @@
 var R     = require('ramda');
 var Board = require('../src/js/board');
+var Piece = require('../src/js/piece');
+var Position = require('../src/js/position');
 var pieces = require('../src/js/pieces');
 var move = require('../src/js/move');
 
@@ -25,16 +27,16 @@ describe('Pieces', function() {
     var board = new Board({
       size: 8,
       white: [
-        {
+        new Piece({
           name: 'rook',
-          position: {x: 4, y: 4}
-        }
+          position: new Position({x: 4, y: 4})
+        })
       ],
       black: [],
     });
 
-    var piece = board.white[0];
-    var actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
+    var p = board.white[0];
+    var actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
 
     //var actualMoves = piece.possibleMoves(piece);
     var expectedMoves = [
@@ -56,8 +58,8 @@ describe('Pieces', function() {
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
-    piece.position = {x: 0, y: 7}
-    actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
+    p.position = {x: 0, y: 7}
+    actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
     //actualMoves = piece.possibleMoves(piece);
     expectedMoves = [
       {x: 0, y: 0},
@@ -82,21 +84,21 @@ describe('Pieces', function() {
     var board = new Board({
       size: 8,
       white: [
-        {
+        new Piece({
           name: 'rook',
-          position: {x: 4, y: 4}
-        }
+          position: new Position({x: 4, y: 4})
+        })
       ],
       black: [
-        {
+        new Piece({
           name: 'rook',
-          position: {x: 4, y: 6}
-        }
+          position: new Position({x: 4, y: 6})
+        })
       ],
     });
 
-    var piece = board.white[0];
-    var actualMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
+    var p = board.white[0];
+    var actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
