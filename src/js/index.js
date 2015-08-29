@@ -1,6 +1,6 @@
 var Board = require('./board');
-var move = require('../src/js/move');
-var pieces = require('../src/js/pieces');
+var move = require('./move');
+var pieces = require('./pieces');
 
 var R = require('ramda');
 
@@ -17,6 +17,8 @@ window.board = new Board({
 
 var piece = board.white[0];
 var possibleMoves = move.getMoves(board, piece.position, pieces[piece.name].parlett);
+
+console.log(piece, possibleMoves);
 
 // var p = getSelectedPiece(event);
 //var possibleMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
