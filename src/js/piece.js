@@ -6,6 +6,7 @@ var Position = require('./position');
 var Piece = function(opts) {
   if (typeof opts != 'object'
     || typeof opts.name != 'string'
+    || typeof opts.color != 'string'
     || R.not(R.is(Position, opts.position))) {
     throw new Errors.TypeClassError('Invalid Piece options.');
   }

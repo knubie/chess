@@ -26,16 +26,16 @@ describe('Pieces', function() {
   it('should return all possible moves on an empty board', function() {
     var board = new Board({
       size: 8,
-      white: [
+      pieces: [
         new Piece({
           name: 'rook',
+          color: 'white',
           position: new Position({x: 4, y: 4})
         })
       ],
-      black: [],
     });
 
-    var p = board.white[0];
+    var p = board.pieces[0];
     var actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
 
     //var actualMoves = piece.possibleMoves(piece);
@@ -83,21 +83,21 @@ describe('Pieces', function() {
   it('pieces should block other pieces', function() {
     var board = new Board({
       size: 8,
-      white: [
+      pieces: [
         new Piece({
           name: 'rook',
+          color: 'white',
           position: new Position({x: 4, y: 4})
-        })
-      ],
-      black: [
+        }),
         new Piece({
           name: 'rook',
+          color: 'black',
           position: new Position({x: 4, y: 6})
         })
       ],
     });
 
-    var p = board.white[0];
+    var p = board.pieces[0];
     var actualMoves = move.getMoves(board, p.position, pieces[p.name].parlett);
     var expectedMoves = [
       {x: 4, y: 0},
