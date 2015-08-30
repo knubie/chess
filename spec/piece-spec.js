@@ -2,10 +2,7 @@ var R        = require('ramda');
 var Board    = require('../src/js/Types').Board;
 var Piece    = require('../src/js/Types').Piece;
 var Position = require('../src/js/Types').Position;
-
 var Chess    = require('../src/js/chess.js')
-
-console.log(Board);
 
 // :: ([position], [position], Number) -> Boolean
 var compare = function(arr1, arr2, i) {

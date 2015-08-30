@@ -90,11 +90,12 @@ var getMoves = R.curry(function(board, piece) {
 var movePiece = R.curry(function(board, startingPosition, endingPosition) {
   var piece = getPieceAtPosition(board, startingPosition);
   if ( R.any(R.equals(endingPosition), getMoves(board, piece)) ) {
-    var index = R.indexOf(piece, board.pieces);
-    var pieces = R.remove(index, 1, board.pieces);
-    var newPiece = new Piece({ name: piece.name, position: endingPosition, color: piece.color });
-    var newPieces = R.append(newPiece, pieces);
-    return new Board({ size: board.size, pieces: newPieces });
+    return new Board({
+      size: board.size,
+      pieces: R.adjust(R.always(
+        new Piece({ name: piece.name, position: endingPosition, color: piece.color });
+      ), R.indexOf(piece, board.pieces), board.pieces)
+    });
   } else {
     return null;
   }
