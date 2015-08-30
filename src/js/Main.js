@@ -59,6 +59,36 @@ var orthogonal = curry(function(direction, distance, board, piece) {
   }, concat(range(min, position[axis]), range(position[axis] + 1, max))));
 });
 
+var diagonal = curry(function(direction, distance, board, piece) {
+  check(arguments, [String, [String, Number], Board, Piece]);
+  distance = distance === 'n' ? board.size - 1 : parseInt(distance);
+  var position = piece.position;
+  var move = curry(function(x, y, i) {
+    var pos = new Position({
+      x: x(position.x, i),
+      y: y(position.x, i)
+    });
+    var blockingPieces = any(function(j) {
+      return getPieceAtPosition(board, new Position({
+        x: x(position.x, i - j),
+        y: y(position.y, i - j)
+      }));
+    }, range(1, i));
+    if (getPieceAtPosition(board, pos) || blockingPieces) {
+      return null;
+    } else {
+      return pos;
+    }
+  });
+  return filter(legalPosition(board), filter(identity, converge(
+    concatAll,
+      map(move(add, add)),
+      map(move(subtract, add)),
+      map(move(subtract, subtract)),
+      map(move(add, subtract))
+  )(range(1, distance + 1))));
+});
+
 var directions = {
   '+': converge(concatAll, orthogonal('sideways'), orthogonal('backwards'), orthogonal('forwards')),
   '>': orthogonal('forwards'),
@@ -66,7 +96,8 @@ var directions = {
   '=': orthogonal('sideways'),
   '<>': converge(concat, orthogonal('forwards'), orthogonal('backwards')),
   '>=': converge(concat, orthogonal('forwards'), orthogonal('sideways')),
-  '<=': converge(concat, orthogonal('backwards'), orthogonal('sideways'))
+  '<=': converge(concat, orthogonal('backwards'), orthogonal('sideways')),
+  'X': diagonal('Null')
 };
 
 //  getPieceAtPosition :: (Board, Position) -> Maybe Piece
