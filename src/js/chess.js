@@ -1,6 +1,6 @@
 var R        = require('ramda');
 var Errors   = require('./Errors');
-//var Types    = require('./lib/types');
+var check    = require('./lib/type-checker').checkAll;
 // var {Board, Piece, Position} = require('./Types');
 var Board    = require('./Types').Board;
 var Piece    = require('./Types').Piece;
@@ -10,6 +10,7 @@ R.concatAll = R.unapply(R.reduce(R.concat, []));
 
 //  orthogonal :: (String, Either String | Number, Board, Piece) -> [Position]
 var orthogonal = R.curry(function(direction, distance, board, piece) {
+  check(arguments, [String, [String, Number], Board, Piece]);
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);
   var position = piece.position;
   var forwards = direction === 'forwards';
@@ -20,10 +21,10 @@ var orthogonal = R.curry(function(direction, distance, board, piece) {
   var axis = (forwards || backwards) ? 'y' : 'x';
 
   var getPosition = R.curry(function(axis, i) {
-    return {
+    return new Position({
       x: (axis === 'x') ? i : position.x,
       y: (axis === 'y') ? i : position.y
-    };
+    });
   });
 
   var min = Math.max(position[axis] - distance, 0);
@@ -70,16 +71,19 @@ var directions = {
 
 //  getPieceAtPosition :: (Board, Position) -> Maybe Piece
 var getPieceAtPosition = R.curry(function(board, position) {
+  check(arguments, [Board, Position]);
   return R.find(R.propEq('position', position), board.pieces);
 });
 
 //  legalPosition :: (Board, Position) -> Boolean
 var legalPosition = R.curry(function(board, position) {
+  check(arguments, [Board, Position]);
   return position.x >= 0 && position.x < board.size && position.y >= 0 && position.y < board.size;
 });
 
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = R.curry(function(board, piece) {
+  check(arguments, [Board, Piece]);
   //R.compose(R.uniq, R.flatten, R.map)
   return R.uniq(R.flatten(R.map(function(p) {
     return directions[p.direction](p.distance, board, piece);
@@ -88,8 +92,9 @@ var getMoves = R.curry(function(board, piece) {
 
 //  movePiece :: (Board, Position, Position) -> Maybe Board
 var movePiece = R.curry(function(board, startingPosition, endingPosition) {
+  check(arguments, [Board, Position, Position]);
   var piece = getPieceAtPosition(board, startingPosition);
-  if ( R.any(R.equals(endingPosition), getMoves(board, piece)) ) {
+  if (R.contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
       pieces: R.adjust(R.always(

@@ -32,7 +32,7 @@ var compare = function(arr1, arr2, i) {
 
 describe('Movement', function() {
   it('n+ should return all possible moves', function() {
-    var p = R.clone(board.pieces[0]);
+    var p = board.pieces[0];
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 0},
@@ -53,7 +53,11 @@ describe('Movement', function() {
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
-    p.position = {x: 0, y: 7}
+    p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 0, y: 7})
+    });
     actualMoves = Chess.getMoves(board, p);
     expectedMoves = [
       {x: 0, y: 0},
@@ -75,7 +79,11 @@ describe('Movement', function() {
   });
 
   it('2+ should return all possible moves', function() {
-    var p = R.clone(board.pieces[0]);
+    var p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    });
     p.parlett = [{direction: '+', distance: '2'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
@@ -93,7 +101,11 @@ describe('Movement', function() {
   });
 
   it('2> should return all possible moves', function() {
-    var p = R.clone(board.pieces[0]);
+    var p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    });
     p.parlett = [{direction: '>', distance: '2'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
@@ -105,7 +117,11 @@ describe('Movement', function() {
   });
 
   it('3<= should return all possible moves', function() {
-    var p = R.clone(board.pieces[0]);
+    var p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    });
     p.parlett = [{direction: '<=', distance: '3'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
@@ -139,7 +155,7 @@ describe('Movement', function() {
         })
       ],
     });
-    var p = R.clone(board.pieces[0]);
+    var p = board.pieces[0];
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 0},
