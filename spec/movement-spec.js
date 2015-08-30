@@ -3,6 +3,7 @@ var Board    = require('../src/js/Types').Board;
 var Piece    = require('../src/js/Types').Piece;
 var Position = require('../src/js/Types').Position;
 var Chess    = require('../src/js/chess.js')
+for (k in R) { global[k] = R[k]; }
 
 var board = new Board({
   size: 8,
@@ -19,11 +20,11 @@ var board = new Board({
 var compare = function(arr1, arr2, i) {
   var i = i || 0;
   var position = arr1[i];
-  if ( R.any(R.equals(position), arr2) ) { 
+  if ( any(equals(position), arr2) ) { 
     if (i === arr1.length - 1 && arr2.length === 1) {
       return true;
     } else {
-      return compare(arr1, R.remove(R.indexOf(position, arr2), 1, arr2), i + 1);
+      return compare(arr1, remove(indexOf(position, arr2), 1, arr2), i + 1);
     }
   } else {
     return false
@@ -189,7 +190,7 @@ describe('Movement', function() {
 
     var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
 
-    expect(R.equals(expectedBoard, actualBoard)).toBe(true);
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
 
   it('movePiece should retain other pieces on the board', function() {
@@ -247,12 +248,12 @@ describe('Movement', function() {
 
     var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
 
-    expect(R.equals(expectedBoard, actualBoard)).toBe(true);
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
 
   it('movePiece should return null when the move is invalid', function() {
     var expectedBoard = null; 
     var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
-    expect(R.equals(expectedBoard, actualBoard)).toBe(true);
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
 });

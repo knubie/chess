@@ -6,10 +6,11 @@ var Board    = require('./Types').Board;
 var Piece    = require('./Types').Piece;
 var Position = require('./Types').Position;
 
-R.concatAll = R.unapply(R.reduce(R.concat, []));
+for (k in R) { global[k] = R[k]; }
+var concatAll = unapply(reduce(concat, []));
 
 //  orthogonal :: (String, Either String | Number, Board, Piece) -> [Position]
-var orthogonal = R.curry(function(direction, distance, board, piece) {
+var orthogonal = curry(function(direction, distance, board, piece) {
   check(arguments, [String, [String, Number], Board, Piece]);
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);
   var position = piece.position;
@@ -17,10 +18,10 @@ var orthogonal = R.curry(function(direction, distance, board, piece) {
   var backwards = direction === 'backwards';
   var sideways = direction === 'sideways';
   var white = piece.color === 'white';
-  var black = R.not(white);
+  var black = not(white);
   var axis = (forwards || backwards) ? 'y' : 'x';
 
-  var getPosition = R.curry(function(axis, i) {
+  var getPosition = curry(function(axis, i) {
     return new Position({
       x: (axis === 'x') ? i : position.x,
       y: (axis === 'y') ? i : position.y
@@ -38,13 +39,13 @@ var orthogonal = R.curry(function(direction, distance, board, piece) {
   // Filter out falsey values.
   // The identity returns its parameter,
   // hence if parameter is falsey it will return falsey.
-  return R.filter(R.identity, R.map(function(i) {
+  return filter(identity, map(function(i) {
     var inBetween = i < position[axis]
-                  ? R.range(i, position[axis])
-                  : R.range(position[axis] + 1, i + 1);
+                  ? range(i, position[axis])
+                  : range(position[axis] + 1, i + 1);
 
-    var blockingPieces = R.any(
-      R.compose(
+    var blockingPieces = any(
+      compose(
         getPieceAtPosition(board),
         getPosition(axis)
       ), inBetween);
@@ -56,52 +57,52 @@ var orthogonal = R.curry(function(direction, distance, board, piece) {
     } else {
       return getPosition(axis, i);
     }
-  }, R.concat(R.range(min, position[axis]), R.range(position[axis] + 1, max))));
+  }, concat(range(min, position[axis]), range(position[axis] + 1, max))));
 });
 
 var directions = {
-  '+': R.converge(R.concatAll, orthogonal('sideways'), orthogonal('backwards'), orthogonal('forwards')),
+  '+': converge(concatAll, orthogonal('sideways'), orthogonal('backwards'), orthogonal('forwards')),
   '>': orthogonal('forwards'),
   '<': orthogonal('backwards'),
   '=': orthogonal('sideways'),
-  '<>': R.converge(R.concat, orthogonal('forwards'), orthogonal('backwards')),
-  '>=': R.converge(R.concat, orthogonal('forwards'), orthogonal('sideways')),
-  '<=': R.converge(R.concat, orthogonal('backwards'), orthogonal('sideways'))
+  '<>': converge(concat, orthogonal('forwards'), orthogonal('backwards')),
+  '>=': converge(concat, orthogonal('forwards'), orthogonal('sideways')),
+  '<=': converge(concat, orthogonal('backwards'), orthogonal('sideways'))
 };
 
 //  getPieceAtPosition :: (Board, Position) -> Maybe Piece
-var getPieceAtPosition = R.curry(function(board, position) {
+var getPieceAtPosition = curry(function(board, position) {
   check(arguments, [Board, Position]);
-  return R.find(R.propEq('position', position), board.pieces);
+  return find(propEq('position', position), board.pieces);
 });
 
 //  legalPosition :: (Board, Position) -> Boolean
-var legalPosition = R.curry(function(board, position) {
+var legalPosition = curry(function(board, position) {
   check(arguments, [Board, Position]);
   return position.x >= 0 && position.x < board.size && position.y >= 0 && position.y < board.size;
 });
 
 //  getMoves :: (Board, Piece) -> [Position]
-var getMoves = R.curry(function(board, piece) {
+var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
-  //R.compose(R.uniq, R.flatten, R.map)
-  return R.uniq(R.flatten(R.map(function(p) {
+  //compose(uniq, flatten, map)
+  return uniq(flatten(map(function(p) {
     return directions[p.direction](p.distance, board, piece);
   }, piece.parlett)));
 });
 
 //  movePiece :: (Board, Position, Position) -> Maybe Board
-var movePiece = R.curry(function(board, startingPosition, endingPosition) {
+var movePiece = curry(function(board, startingPosition, endingPosition) {
   check(arguments, [Board, Position, Position]);
-  //R.compose(getMoves(board), getPieceAtPosition)(board, startingPosition);
+  //compose(getMoves(board), getPieceAtPosition)(board, startingPosition);
   //getMoves(board, getPieceAtPosition(board, startingPosition))
   var piece = getPieceAtPosition(board, startingPosition);
-  if (R.contains(endingPosition, getMoves(board, piece))) {
+  if (contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
-      pieces: R.adjust(R.always(
-        new Piece(R.assoc('position', endingPosition, piece))
-      ), R.indexOf(piece, board.pieces), board.pieces)
+      pieces: adjust(always(
+        new Piece(assoc('position', endingPosition, piece))
+      ), indexOf(piece, board.pieces), board.pieces)
     });
   } else {
     return null;

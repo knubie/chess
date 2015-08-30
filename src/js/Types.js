@@ -1,5 +1,6 @@
 var R = require('ramda');
 var Errors = require('./Errors');
+for (k in R) { global[k] = R[k]; }
 
 // Board { size :: Number, pieces :: [Piece] }
 var Board = function(opts) {
@@ -8,7 +9,7 @@ var Board = function(opts) {
     || opts.pieces == null) {
     throw new Errors.TypeClassError('Invalid Board options.');
   }
-  if (R.any(R.compose(R.not, R.is(Piece)), opts.pieces)) {
+  if (any(compose(not, is(Piece)), opts.pieces)) {
     throw new Errors.TypeClassError('Invalid type.');
   }
   for (k in opts) { this[k] = opts[k] };
@@ -19,7 +20,7 @@ var Piece = function(opts) {
   if (typeof opts != 'object'
     || typeof opts.name != 'string'
     || typeof opts.color != 'string'
-    || R.not(R.is(Position, opts.position))) {
+    || not(is(Position, opts.position))) {
     throw new Errors.TypeClassError('Invalid Piece options.');
   }
   for (k in opts) { this[k] = opts[k] };

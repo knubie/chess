@@ -1,41 +1,42 @@
 var R = require('ramda');
 var Errors = require('../errors');
+for (k in R) { global[k] = R[k]; }
 
-var checkType = R.curry(function(arg, x) {
+var checkType = curry(function(arg, x) {
   var t
   if (x === String) {
-    tt = R.equals(R.type(arg), 'String');
+    tt = equals(type(arg), 'String');
   } else if (x === Number) {
-    tt = R.equals(R.type(arg), 'Number');
+    tt = equals(type(arg), 'Number');
   } else if (x === Boolean) {
-    tt = R.equals(R.type(arg), 'Boolean');
+    tt = equals(type(arg), 'Boolean');
   } else {
-    tt = R.is(x, arg);
+    tt = is(x, arg);
   }
   return tt;
 });
 
 module.exports = {
-  check: R.curry(function(klass, obj) {
-    if (!R.is(klass, obj)) {
+  check: curry(function(klass, obj) {
+    if (!is(klass, obj)) {
       throw new Errors.TypeClassError('Invalid type.');
     }
   }),
-  checkAll: R.curry(function(args, types) {
+  checkAll: curry(function(args, types) {
     var args = Array.prototype.slice.call(args);
-    R.forEach(function(pair) {
+    forEach(function(pair) {
       var arg = pair[0];
-      var type = pair[1];
+      var typeclass = pair[1];
       var t;
-      if (R.equals(R.type(type), 'Array')) {
-        t = R.any(checkType(arg), type)
+      if (equals(type(typeclass), 'Array')) {
+        t = any(checkType(arg), typeclass)
       } else {
-        t = checkType(arg, type);
+        t = checkType(arg, typeclass);
       }
       if (!t) {
         // TODO: log more details about the expected type and actual type.
         throw new Errors.TypeClassError('Invalid type.');
       }
-    }, R.zip(args, types));
+    }, zip(args, types));
   })
 }
