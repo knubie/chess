@@ -93,7 +93,7 @@ var movePiece = R.curry(function(board, startingPosition, endingPosition) {
     return new Board({
       size: board.size,
       pieces: R.adjust(R.always(
-        new Piece({ name: piece.name, position: endingPosition, color: piece.color });
+        new Piece({ name: piece.name, position: endingPosition, color: piece.color })
       ), R.indexOf(piece, board.pieces), board.pieces)
     });
   } else {

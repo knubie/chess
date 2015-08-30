@@ -4,6 +4,17 @@ var Piece    = require('../src/js/Types').Piece;
 var Position = require('../src/js/Types').Position;
 var Chess    = require('../src/js/chess.js')
 
+var board = new Board({
+  size: 8,
+  pieces: [
+    new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    })
+  ],
+});
+
 // :: ([position], [position], Number) -> Boolean
 var compare = function(arr1, arr2, i) {
   var i = i || 0;
@@ -19,23 +30,10 @@ var compare = function(arr1, arr2, i) {
   }
 }
 
-describe('Pieces', function() {
-  it('should return all possible moves on an empty board', function() {
-    var board = new Board({
-      size: 8,
-      pieces: [
-        new Piece({
-          name: 'rook',
-          color: 'white',
-          position: new Position({x: 4, y: 4})
-        })
-      ],
-    });
-
-    var p = board.pieces[0];
+describe('Movement', function() {
+  it('n+ should return all possible moves', function() {
+    var p = R.clone(board.pieces[0]);
     var actualMoves = Chess.getMoves(board, p);
-
-    //var actualMoves = piece.possibleMoves(piece);
     var expectedMoves = [
       {x: 4, y: 0},
       {x: 4, y: 1},
@@ -57,7 +55,6 @@ describe('Pieces', function() {
 
     p.position = {x: 0, y: 7}
     actualMoves = Chess.getMoves(board, p);
-    //actualMoves = piece.possibleMoves(piece);
     expectedMoves = [
       {x: 0, y: 0},
       {x: 0, y: 1},
@@ -77,7 +74,56 @@ describe('Pieces', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
-  it('pieces should block other pieces', function() {
+  it('2+ should return all possible moves', function() {
+    var p = R.clone(board.pieces[0]);
+    p.parlett = [{direction: '+', distance: '2'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 4, y: 2},
+      {x: 4, y: 3},
+      {x: 4, y: 5},
+      {x: 4, y: 6},
+      {y: 4, x: 2},
+      {y: 4, x: 3},
+      {y: 4, x: 5},
+      {y: 4, x: 6}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
+  it('2> should return all possible moves', function() {
+    var p = R.clone(board.pieces[0]);
+    p.parlett = [{direction: '>', distance: '2'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 4, y: 5},
+      {x: 4, y: 6}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
+  it('3<= should return all possible moves', function() {
+    var p = R.clone(board.pieces[0]);
+    p.parlett = [{direction: '<=', distance: '3'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 4, y: 1},
+      {x: 4, y: 2},
+      {x: 4, y: 3},
+      {y: 4, x: 1},
+      {y: 4, x: 2},
+      {y: 4, x: 3},
+      {y: 4, x: 5},
+      {y: 4, x: 6},
+      {y: 4, x: 7}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
+  it('other pieces on the board should block movement', function() {
     var board = new Board({
       size: 8,
       pieces: [
@@ -93,8 +139,7 @@ describe('Pieces', function() {
         })
       ],
     });
-
-    var p = board.pieces[0];
+    var p = R.clone(board.pieces[0]);
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 0},
