@@ -1,6 +1,6 @@
 var R        = require('ramda');
 var Errors   = require('./Errors');
-var Types    = require('./lib/types');
+//var Types    = require('./lib/types');
 // var {Board, Piece, Position} = require('./Types');
 var Board    = require('./Types').Board;
 var Piece    = require('./Types').Piece;
@@ -8,10 +8,16 @@ var Position = require('./Types').Position;
 
 R.concatAll = R.unapply(R.reduce(R.concat, []));
 
-//  orthogonal :: (Maybe String, Either String | Number, Board, Piece) -> [Position]
+//  orthogonal :: (String, Either String | Number, Board, Piece) -> [Position]
 var orthogonal = R.curry(function(direction, distance, board, piece) {
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);
-  var position = piece.position
+  var position = piece.position;
+  var forwards = direction === 'forwards';
+  var backwards = direction === 'backwards';
+  var sideways = direction === 'sideways';
+  var white = piece.color === 'white';
+  var black = R.not(white);
+  var axis = (forwards || backwards) ? 'y' : 'x';
 
   var getPosition = R.curry(function(axis, i) {
     return {
@@ -20,48 +26,36 @@ var orthogonal = R.curry(function(direction, distance, board, piece) {
     };
   });
 
+  var min = Math.max(position[axis] - distance, 0);
+  var max = Math.min(position[axis] + distance + 1, board.size);
+  if ( (forwards && white) || (backwards && black) ) {
+    var min = position[axis];
+  } else if ( (backwards && white) || (forwards && black) ) {
+    var max = position[axis] + 1;
+  }
+
   // Filter out falsey values.
   // The identity returns its parameter,
   // hence if parameter is falsey it will return falsey.
-  return R.filter(R.identity, R.flatten(
-    R.map(function(axis) {
-      if ( (direction === 'forwards' || direction === 'backwards') && axis === 'x') {
-        return false;
-      } else if (direction === 'sideways' && axis === 'y') {
-        return false
-      } else {
-        // direction === null || direction === 'sideways'
-        var min = Math.max(position[axis] - distance, 0); // or position[axis] if forwards
-        var max = Math.min(position[axis] + distance + 1, board.size); // or position[axis] if backwards
-        if ( (direction === 'forwards' && piece.color === 'white')
-          || (direction === 'backwards' && piece.color === 'black') ) {
-          var min = position[axis];
-        } else if ( (direction === 'backwards' && piece.color === 'white')
-                 || (direction === 'forwards' && piece.color === 'black') ) {
-          var max = position[axis] + 1;
-        }
-        return R.map(function(i) {
-          var inBetween = i < position[axis]
-                        ? R.range(i, position[axis])
-                        : R.range(position[axis] + 1, i + 1);
+  return R.filter(R.identity, R.map(function(i) {
+    var inBetween = i < position[axis]
+                  ? R.range(i, position[axis])
+                  : R.range(position[axis] + 1, i + 1);
 
-          var blockingPieces = R.any(
-            R.compose(
-              getPieceAtPosition(board),
-              getPosition(axis)
-            ), inBetween);
+    var blockingPieces = R.any(
+      R.compose(
+        getPieceAtPosition(board),
+        getPosition(axis)
+      ), inBetween);
 
-          // TODO: moveType check
-          if (blockingPieces) {
-            // TODO: check if piece is opposite color, add to captures
-            return false; // Gets filtered out.
-          } else {
-            return getPosition(axis, i);
-          }
-        }, R.concat(R.range(min, position[axis]), R.range(position[axis] + 1, max)));
-      }
-    }, ['x', 'y'])
-  ));
+    // TODO: moveType check
+    if (blockingPieces) {
+      // TODO: check if piece is opposite color, add to captures
+      return null; // Gets filtered out.
+    } else {
+      return getPosition(axis, i);
+    }
+  }, R.concat(R.range(min, position[axis]), R.range(position[axis] + 1, max))));
 });
 
 var directions = {
