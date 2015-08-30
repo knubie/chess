@@ -175,4 +175,84 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
+  it('movePiece should return a new Board with the updated pieces', function() {
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 0})
+        })
+      ],
+    });
+
+    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+
+    expect(R.equals(expectedBoard, actualBoard)).toBe(true);
+  });
+
+  it('movePiece should retain other pieces on the board', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 6, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 7, y: 5})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 3, y: 0})
+        }),
+      ],
+    });
+
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 0})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 6, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 7, y: 5})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 3, y: 0})
+        }),
+      ],
+    });
+
+    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+
+    expect(R.equals(expectedBoard, actualBoard)).toBe(true);
+  });
+
+  it('movePiece should return null when the move is invalid', function() {
+    var expectedBoard = null; 
+    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
+    expect(R.equals(expectedBoard, actualBoard)).toBe(true);
+  });
 });

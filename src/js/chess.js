@@ -93,12 +93,14 @@ var getMoves = R.curry(function(board, piece) {
 //  movePiece :: (Board, Position, Position) -> Maybe Board
 var movePiece = R.curry(function(board, startingPosition, endingPosition) {
   check(arguments, [Board, Position, Position]);
+  //R.compose(getMoves(board), getPieceAtPosition)(board, startingPosition);
+  //getMoves(board, getPieceAtPosition(board, startingPosition))
   var piece = getPieceAtPosition(board, startingPosition);
   if (R.contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
       pieces: R.adjust(R.always(
-        new Piece({ name: piece.name, position: endingPosition, color: piece.color })
+        new Piece(R.assoc('position', endingPosition, piece))
       ), R.indexOf(piece, board.pieces), board.pieces)
     });
   } else {
