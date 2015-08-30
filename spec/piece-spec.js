@@ -1,7 +1,8 @@
 var R        = require('ramda');
-var Board    = require('../src/js/types/Board');
-var Piece    = require('../src/js/types/Piece');
-var Position = require('../src/js/types/Position');
+var Board    = require('../src/js/Types').Board;
+var Piece    = require('../src/js/Types').Piece;
+var Position = require('../src/js/Types').Position;
+
 var Chess    = require('../src/js/chess.js')
 
 console.log(Board);

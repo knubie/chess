@@ -1,10 +1,12 @@
 var R        = require('ramda');
-var Errors   = require('./errors');
+var Errors   = require('./Errors');
 var Types    = require('./lib/types');
 // var {Board, Piece, Position} = require('./Types');
-var Board    = require('./types/Board');
-var Piece    = require('./types/Piece');
-var Position = require('./types/Position');
+var Board    = require('./Types').Board;
+var Piece    = require('./Types').Piece;
+var Position = require('./Types').Position;
+
+R.concatAll = R.unapply(R.reduce(R.concat, []));
 
 //  orthogonal :: (Maybe String, Either String | Number, Board, Piece) -> [Position]
 var orthogonal = R.curry(function(direction, distance, board, piece) {
@@ -63,8 +65,7 @@ var orthogonal = R.curry(function(direction, distance, board, piece) {
 });
 
 var directions = {
-  //'+': R.converge(R.concat, orthogonal('sideways'), orthogonal('backwards'), orthogonal('forwards')), // This won't work because R.concat is not variadic.
-  '+': R.converge(R.concat, R.converge(R.concat, orthogonal('sideways'), orthogonal('backwards')), orthogonal('forwards')),
+  '+': R.converge(R.concatAll, orthogonal('sideways'), orthogonal('backwards'), orthogonal('forwards')),
   '>': orthogonal('forwards'),
   '<': orthogonal('backwards'),
   '=': orthogonal('sideways'),
