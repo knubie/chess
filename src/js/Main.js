@@ -1,5 +1,4 @@
 var R        = require('ramda');
-var Errors   = require('./Errors');
 var check    = require('./lib/type-checker').checkAll;
 // var {Board, Piece, Position} = require('./Types');
 var Board    = require('./Types').Board;
