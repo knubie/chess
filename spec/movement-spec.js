@@ -359,4 +359,52 @@ describe('Movement', function() {
     var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
+
+  it('a piece with multiple parlett rules should return all possible moves', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'queen',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        })
+      ],
+    });
+    var p = board.pieces[0];
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      // Diagonal
+      {x: 0, y: 0},
+      {x: 1, y: 1},
+      {x: 2, y: 2},
+      {x: 3, y: 3},
+      {x: 5, y: 5},
+      {x: 6, y: 6},
+      {x: 7, y: 7},
+      {x: 1, y: 7},
+      {x: 2, y: 6},
+      {x: 3, y: 5},
+      {x: 5, y: 3},
+      {x: 6, y: 2},
+      {x: 7, y: 1},
+      // Orthogonal
+      {x: 4, y: 0},
+      {x: 4, y: 1},
+      {x: 4, y: 2},
+      {x: 4, y: 3},
+      {x: 4, y: 5},
+      {x: 4, y: 6},
+      {x: 4, y: 7},
+      {y: 4, x: 0},
+      {y: 4, x: 1},
+      {y: 4, x: 2},
+      {y: 4, x: 3},
+      {y: 4, x: 5},
+      {y: 4, x: 6},
+      {y: 4, x: 7}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
 });

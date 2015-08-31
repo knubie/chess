@@ -36,7 +36,19 @@ var Piece = function(opts) {
         direction: 'X',
         distance: 'n'
       }]
-    }
+    },
+    'queen': {
+      parlett: [
+        {
+          direction: 'X',
+          distance: 'n'
+        },
+        {
+          direction: '+',
+          distance: 'n'
+        }
+      ]
+    },
   };
   this.parlett = pieces[opts.name].parlett
 }

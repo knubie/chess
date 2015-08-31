@@ -128,6 +128,15 @@ var legalPosition = curry(function(board, position) {
   return position.x >= 0 && position.x < board.size && position.y >= 0 && position.y < board.size;
 });
 
+//  getCaptures :: (Board, Piece) -> [Position]
+var getCaptures = curry(function(board, piece) {
+  check(arguments, [Board, Piece]);
+  //compose(uniq, flatten, map)
+  return uniq(flatten(map(function(p) {
+    return directions[p.direction](p.distance, board, piece);
+  }, piece.parlett)));
+});
+
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
@@ -155,4 +164,4 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
   }
 });
 
-module.exports = { movePiece: movePiece, getMoves: getMoves };
+module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures };
