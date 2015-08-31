@@ -12,8 +12,17 @@ var Board = function(opts) {
   if (any(compose(not, is(Piece)), opts.pieces)) {
     throw new Errors.TypeClassError('Invalid type.');
   }
-  for (k in opts) { this[k] = opts[k] };
+  for (k in opts) {
+    if (opts.hasOwnProperty(k)) {
+      this[k] = opts[k];
+    }
+  };
 }
+
+//Board.of = function(x) { return new Board(x); };
+//Board.prototype.map = function(f){
+  //return Board.of(f(this))
+//}
 
 // Piece { name :: String, color :: String, position :: Position }
 var Piece = function(opts) {
@@ -23,7 +32,11 @@ var Piece = function(opts) {
     || not(is(Position, opts.position))) {
     throw new Errors.TypeClassError('Invalid Piece options.');
   }
-  for (k in opts) { this[k] = opts[k] };
+  for (k in opts) {
+    if (opts.hasOwnProperty(k)) {
+      this[k] = opts[k];
+    }
+  };
   var pieces = {
     'rook': {
       parlett: [{
@@ -53,6 +66,11 @@ var Piece = function(opts) {
   this.parlett = pieces[opts.name].parlett
 }
 
+//Piece.of = function(x) { return new Piece(x); };
+//Piece.prototype.map = function(f){
+  //return Piece.of(f(this))
+//}
+
 // Position { x :: Number, y :: Number }
 var Position = function(opts) {
   if (typeof opts != 'object'
@@ -60,7 +78,16 @@ var Position = function(opts) {
     || typeof opts.y != 'number') {
     throw new Errors.TypeClassError('Invalid Position options.');
   }
-  for (k in opts) { this[k] = opts[k] };
+  for (k in opts) {
+    if (opts.hasOwnProperty(k)) {
+      this[k] = opts[k];
+    }
+  };
 }
+
+Position.of = function(x) { return new Position(x); };
+//Position.prototype.map = function(f){
+  //return Position.of(f(this))
+//}
 
 module.exports = { Board: Board, Piece: Piece, Position: Position };

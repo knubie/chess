@@ -7,12 +7,17 @@ var Position = require('./Types').Position;
 
 for (k in R) { global[k] = R[k]; }
 var concatAll = unapply(reduce(concat, []));
+//  between :: (Number, Number) -> [Number]
+var between = curry(function(start, end) {
+  check(arguments, [Number, Number]);
+  return start < end ? range(start + 1, end) : range(end + 1, start);
+});
 
 //  orthogonal :: (String, Either String | Number, Board, Piece) -> [Position]
 var orthogonal = curry(function(direction, distance, board, piece) {
   check(arguments, [String, [String, Number], Board, Piece]);
+
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);
-  var position = piece.position;
   var forwards = direction === 'forwards';
   var backwards = direction === 'backwards';
   var sideways = direction === 'sideways';
@@ -20,47 +25,38 @@ var orthogonal = curry(function(direction, distance, board, piece) {
   var black = not(white);
   var axis = (forwards || backwards) ? 'y' : 'x';
 
-  var getPosition = curry(function(axis, i) {
-    return new Position({
-      x: (axis === 'x') ? i : position.x,
-      y: (axis === 'y') ? i : position.y
-    });
-  });
-
-  var min = Math.max(position[axis] - distance, 0);
-  var max = Math.min(position[axis] + distance + 1, board.size);
+  var minD = max(piece.position[axis] - distance, 0);
+  var maxD = min(piece.position[axis] + distance + 1, board.size);
   if ( (forwards && white) || (backwards && black) ) {
-    var min = position[axis];
+    var minD = piece.position[axis];
   } else if ( (backwards && white) || (forwards && black) ) {
-    var max = position[axis] + 1;
+    var maxD = piece.position[axis] + 1;
   }
 
-  // Filter out falsey values.
-  // The identity returns its parameter,
-  // hence if parameter is falsey it will return falsey.
-  return filter(identity, map(function(i) {
-    var inBetween = i < position[axis]
-                  ? range(i + 1, position[axis])
-                  : range(position[axis] + 1, i);
+  // TODO: only check orthogonalBlocking if piece is not a jumper
+  return reject(either(getPieceAtPosition(board, piece.color),
+                       getOrthogonalBlocking(board, piece)),
+                map(compose(Position.of, assoc(axis, __, piece.position)),
+                    concat(range(minD, piece.position[axis]),
+                           range(piece.position[axis] + 1, maxD))));
+});
 
-    // compose is broken in v16 or v17...
-    //var blockingPieces = any(
+//  getOrthogonalBlocking :: (Board, Piece, Position) -> Boolean
+var getOrthogonalBlocking = curry(function(board, piece, position) {
+    check(arguments, [Board, Piece, Position]);
+
+    var axis = position.x === piece.position.x ? 'y' : 'x';
+    //// compose is broken in v16 or v17...
+    //return any(
       //compose(
         //getAnyPieceAtPosition(board),
-        //getPosition(axis)
-      //), inBetween);
-    var blockingPieces = any(function(i) {
-      return getAnyPieceAtPosition(board, getPosition(axis, i));
-    }, inBetween);
-
-    // TODO: moveType check
-    if (blockingPieces || getPieceAtPosition(board, piece.color, getPosition(axis, i))) {
-      // TODO: check if piece is opposite color, add to captures
-      return null; // Gets filtered out.
-    } else {
-      return getPosition(axis, i);
-    }
-  }, concat(range(min, position[axis]), range(position[axis] + 1, max))));
+        ////getPosition(axis)
+        //compose(Position.of, assoc(axis, __, piece.position))
+      //), between(position[axis], piece.position[axis]));
+    return any(function(j) {
+      return getAnyPieceAtPosition(board,
+               Position.of(assoc(axis, j, piece.position)));
+    }, between(position[axis], piece.position[axis]));
 });
 
 var diagonal = curry(function(direction, distance, board, piece) {

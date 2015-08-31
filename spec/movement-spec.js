@@ -297,7 +297,6 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
-
   it('get captures should return a list of capturable positions for n+', function() {
     var board = new Board({
       size: 8,
@@ -321,6 +320,11 @@ describe('Movement', function() {
           name: 'rook',
           color: 'black',
           position: new Position({x: 4, y: 0})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 7}) // doesn't get blocked
         })
       ],
     });
@@ -334,7 +338,7 @@ describe('Movement', function() {
       //{x: 4, y: 3},
       //{x: 4, y: 5},
       {x: 4, y: 6}, // Black piece
-      //{x: 4, y: 7},
+      //{x: 4, y: 7}, // Black piece
 
       //{y: 4, x: 0},
       //{y: 4, x: 1},
