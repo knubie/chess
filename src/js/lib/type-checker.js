@@ -1,5 +1,5 @@
 var R = require('ramda');
-var Errors = require('../errors');
+var Errors = require('../Errors');
 for (k in R) { global[k] = R[k]; }
 
 var checkType = curry(function(arg, x) {
