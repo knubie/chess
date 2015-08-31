@@ -63,6 +63,11 @@ var diagonal = curry(function(direction, distance, board, piece) {
   check(arguments, [String, [String, Number], Board, Piece]);
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);
   var position = piece.position;
+  var forwards = direction === 'forwards';
+  var backwards = direction === 'backwards';
+  var white = piece.color === 'white';
+  var black = not(white);
+
   var move = curry(function(x, y, i) {
     var pos = new Position({
       x: x(position.x, i),
@@ -80,13 +85,22 @@ var diagonal = curry(function(direction, distance, board, piece) {
       return pos;
     }
   });
-  return filter(legalPosition(board), filter(identity, converge(
-    concatAll,
-      map(move(add, add)),
-      map(move(subtract, add)),
-      map(move(subtract, subtract)),
-      map(move(add, subtract))
-  )(range(1, distance + 1))));
+  // forwards && white
+  if ((forwards && white) || (backwards && black)) {
+    return filter(legalPosition(board), filter(identity, converge(
+      concatAll,
+        map(move(add, add)),
+        map(move(subtract, add))
+    )(range(1, distance + 1))));
+  } else if ( (forwards && black) || (backwards && white)) {
+  // backwards && white
+    return filter(legalPosition(board), filter(identity, converge(
+      concatAll,
+        map(move(subtract, subtract)),
+        map(move(add, subtract))
+    )(range(1, distance + 1))));
+  }
+
 });
 
 var directions = {
@@ -97,7 +111,9 @@ var directions = {
   '<>': converge(concat, orthogonal('forwards'), orthogonal('backwards')),
   '>=': converge(concat, orthogonal('forwards'), orthogonal('sideways')),
   '<=': converge(concat, orthogonal('backwards'), orthogonal('sideways')),
-  'X': diagonal('Null')
+  'X': converge(concat, diagonal('forwards'), diagonal('backwards')),
+  'X>': diagonal('forwards'),
+  'X<': diagonal('backwards')
 };
 
 //  getPieceAtPosition :: (Board, Position) -> Maybe Piece
