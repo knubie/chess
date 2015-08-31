@@ -43,11 +43,14 @@ var orthogonal = curry(function(direction, distance, board, piece) {
                   ? range(i, position[axis])
                   : range(position[axis] + 1, i + 1);
 
-    var blockingPieces = any(
-      compose(
-        getPieceAtPosition(board),
-        getPosition(axis)
-      ), inBetween);
+    //var blockingPieces = any(
+      //compose(
+        //getAnyPieceAtPosition(board),
+        //getPosition(axis)
+      //), inBetween);
+    var blockingPieces = any(function(i) {
+      return getAnyPieceAtPosition(board, getPosition(axis, i));
+    }, inBetween);
 
     // TODO: moveType check
     if (blockingPieces) {
@@ -74,12 +77,12 @@ var diagonal = curry(function(direction, distance, board, piece) {
       y: y(position.x, i)
     });
     var blockingPieces = any(function(j) {
-      return getPieceAtPosition(board, new Position({
+      return getAnyPieceAtPosition(board, new Position({
         x: x(position.x, i - j),
         y: y(position.y, i - j)
       }));
     }, range(1, i));
-    if (getPieceAtPosition(board, pos) || blockingPieces) {
+    if (getAnyPieceAtPosition(board, pos) || blockingPieces) {
       return null;
     } else {
       return pos;
@@ -116,11 +119,18 @@ var directions = {
   'X<': diagonal('backwards')
 };
 
-//  getPieceAtPosition :: (Board, Position) -> Maybe Piece
-var getPieceAtPosition = curry(function(board, position) {
-  check(arguments, [Board, Position]);
-  return find(propEq('position', position), board.pieces);
+//  getPieceAtPosition :: (Board, String, Position) -> Maybe Piece
+var getPieceAtPosition = curry(function(board, color, position) {
+  check(arguments, [Board, String, Position]);
+  var positionAndColor = both(propEq('position', position), propEq('color', color));
+  return find(positionAndColor, board.pieces);
 });
+
+//  getAnyPieceAtPosition :: (Board, Position) -> Maybe Piece
+var getAnyPieceAtPosition = either(
+  getPieceAtPosition(__, 'white', __),
+  getPieceAtPosition(__, 'black', __)
+);
 
 //  legalPosition :: (Board, Position) -> Boolean
 var legalPosition = curry(function(board, position) {
@@ -149,9 +159,9 @@ var getMoves = curry(function(board, piece) {
 //  movePiece :: (Board, Position, Position) -> Maybe Board
 var movePiece = curry(function(board, startingPosition, endingPosition) {
   check(arguments, [Board, Position, Position]);
-  //compose(getMoves(board), getPieceAtPosition)(board, startingPosition);
-  //getMoves(board, getPieceAtPosition(board, startingPosition))
-  var piece = getPieceAtPosition(board, startingPosition);
+  //compose(getMoves(board), getAnyPieceAtPosition)(board, startingPosition);
+  //getMoves(board, getAnyPieceAtPosition(board, startingPosition))
+  var piece = getAnyPieceAtPosition(board, startingPosition);
   if (contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
