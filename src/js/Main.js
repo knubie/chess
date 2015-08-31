@@ -40,9 +40,10 @@ var orthogonal = curry(function(direction, distance, board, piece) {
   // hence if parameter is falsey it will return falsey.
   return filter(identity, map(function(i) {
     var inBetween = i < position[axis]
-                  ? range(i, position[axis])
-                  : range(position[axis] + 1, i + 1);
+                  ? range(i + 1, position[axis])
+                  : range(position[axis] + 1, i);
 
+    // compose is broken in v16 or v17...
     //var blockingPieces = any(
       //compose(
         //getAnyPieceAtPosition(board),
@@ -53,7 +54,7 @@ var orthogonal = curry(function(direction, distance, board, piece) {
     }, inBetween);
 
     // TODO: moveType check
-    if (blockingPieces) {
+    if (blockingPieces || getPieceAtPosition(board, piece.color, getPosition(axis, i))) {
       // TODO: check if piece is opposite color, add to captures
       return null; // Gets filtered out.
     } else {
@@ -138,15 +139,6 @@ var legalPosition = curry(function(board, position) {
   return position.x >= 0 && position.x < board.size && position.y >= 0 && position.y < board.size;
 });
 
-//  getCaptures :: (Board, Piece) -> [Position]
-var getCaptures = curry(function(board, piece) {
-  check(arguments, [Board, Piece]);
-  //compose(uniq, flatten, map)
-  return uniq(flatten(map(function(p) {
-    return directions[p.direction](p.distance, board, piece);
-  }, piece.parlett)));
-});
-
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
@@ -154,6 +146,13 @@ var getMoves = curry(function(board, piece) {
   return uniq(flatten(map(function(p) {
     return directions[p.direction](p.distance, board, piece);
   }, piece.parlett)));
+});
+
+//  getCaptures :: (Board, Piece) -> [Position]
+var getCaptures = curry(function(board, piece) {
+  check(arguments, [Board, Piece]);
+  var color = piece.color == 'white' ? 'black' : 'white';
+  return filter(getPieceAtPosition(board, color), getMoves(board, piece));
 });
 
 //  movePiece :: (Board, Position, Position) -> Maybe Board
