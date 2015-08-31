@@ -7,6 +7,7 @@ var Position = require('./Types').Position;
 
 for (k in R) { global[k] = R[k]; }
 var concatAll = unapply(reduce(concat, []));
+
 //  between :: (Number, Number) -> [Number]
 var between = curry(function(start, end) {
   check(arguments, [Number, Number]);
@@ -34,8 +35,7 @@ var orthogonal = curry(function(direction, distance, board, piece) {
   }
 
   // TODO: only check orthogonalBlocking if piece is not a jumper
-  return reject(either(getPieceAtPosition(board, piece.color),
-                       getOrthogonalBlocking(board, piece)),
+  return reject(getPieceAtPosition(board, piece.color),
                 map(compose(Position.of, assoc(axis, __, piece.position)),
                     concat(range(minD, piece.position[axis]),
                            range(piece.position[axis] + 1, maxD))));
@@ -43,22 +43,38 @@ var orthogonal = curry(function(direction, distance, board, piece) {
 
 //  getOrthogonalBlocking :: (Board, Piece, Position) -> Boolean
 var getOrthogonalBlocking = curry(function(board, piece, position) {
-    check(arguments, [Board, Piece, Position]);
+  check(arguments, [Board, Piece, Position]);
 
-    var axis = position.x === piece.position.x ? 'y' : 'x';
-    //// compose is broken in v16 or v17...
-    //return any(
-      //compose(
-        //getAnyPieceAtPosition(board),
-        ////getPosition(axis)
-        //compose(Position.of, assoc(axis, __, piece.position))
-      //), between(position[axis], piece.position[axis]));
-    return any(function(j) {
-      return getAnyPieceAtPosition(board,
-               Position.of(assoc(axis, j, piece.position)));
-    }, between(position[axis], piece.position[axis]));
+  var axis = position.x === piece.position.x ? 'y' : 'x';
+  //// compose is broken in v16 or v17...
+  //return any(
+    //compose(
+      //getAnyPieceAtPosition(board),
+      ////getPosition(axis)
+      //compose(Position.of, assoc(axis, __, piece.position))
+    //), between(position[axis], piece.position[axis]));
+  return any(function(j) {
+    return getAnyPieceAtPosition(board,
+             Position.of(assoc(axis, j, piece.position)));
+  }, between(position[axis], piece.position[axis]));
 });
 
+var moveTypes = {
+  '~': function(movement) { return movement; },
+  'default': function(movement, board, piece) {
+    return compose(
+      reject(getOrthogonalBlocking(board, piece)),
+      movement)
+  }
+}
+//var foooooobar = {
+  //'n>': compose(
+    //reject(getOrthogonalBlocking(board, piece))
+    //orthogonal('forwards')),
+  //'~n>': orthogonal('forwards')
+//}
+
+//  diagonal :: (String, Either String | Number, Board, Piece) -> [Position]
 var diagonal = curry(function(direction, distance, board, piece) {
   check(arguments, [String, [String, Number], Board, Piece]);
   distance = distance === 'n' ? board.size - 1 : parseInt(distance);
@@ -69,38 +85,45 @@ var diagonal = curry(function(direction, distance, board, piece) {
   var black = not(white);
 
   var move = curry(function(x, y, i) {
-    var pos = new Position({
+    return new Position({
       x: x(position.x, i),
       y: y(position.x, i)
     });
-    var blockingPieces = any(function(j) {
-      return getAnyPieceAtPosition(board, new Position({
-        x: x(position.x, i - j),
-        y: y(position.y, i - j)
-      }));
-    }, range(1, i));
-    if (getAnyPieceAtPosition(board, pos) || blockingPieces) {
-      return null;
-    } else {
-      return pos;
-    }
   });
   // forwards && white
   if ((forwards && white) || (backwards && black)) {
-    return filter(legalPosition(board), filter(identity, converge(
+    return reject(getPieceAtPosition(board, piece.color),
+           filter(legalPosition(board),
+    converge(
       concatAll,
         map(move(add, add)),
         map(move(subtract, add))
     )(range(1, distance + 1))));
-  } else if ( (forwards && black) || (backwards && white)) {
+
   // backwards && white
-    return filter(legalPosition(board), filter(identity, converge(
+  } else if ( (forwards && black) || (backwards && white)) {
+    return reject(getPieceAtPosition(board, piece.color),
+           filter(legalPosition(board),
+    converge(
       concatAll,
         map(move(subtract, subtract)),
         map(move(add, subtract))
     )(range(1, distance + 1))));
   }
+});
 
+//  getDiagonalBlocking :: (Board, Piece, Position) -> Boolean
+var getDiagonalBlocking = curry(function(board, piece, position) {
+  check(arguments, [Board, Piece, Position]);
+  var x = position.x > piece.position.x ? add : subtract;
+  var y = position.y > piece.position.y ? add : subtract;
+  var index = Math.abs(position.x - piece.position.x);
+  return any(function(j) {
+    return getAnyPieceAtPosition(board, new Position({
+      x: x(piece.position.x, index - j),
+      y: y(piece.position.y, index - j)
+    }));
+  }, range(1, index));
 });
 
 var directions = {
@@ -140,7 +163,15 @@ var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
   //compose(uniq, flatten, map)
   return uniq(flatten(map(function(p) {
-    return directions[p.direction](p.distance, board, piece);
+    if (p.moveType === 'default' && contains(p.direction, ['+', '>', '<', '<>', '=', '>=', '<='])) {
+      //reject(getOrthogonalBlocking(board, piece)),
+      return reject(getOrthogonalBlocking(board, piece),directions[p.direction](p.distance, board, piece));
+    } else if (p.moveType === 'default' && contains(p.direction, ['X', 'X>', 'X<'])) {
+      return reject(getDiagonalBlocking(board, piece),directions[p.direction](p.distance, board, piece));
+    } else {
+      return directions[p.direction](p.distance, board, piece);
+    }
+    //return directions[p.direction](p.distance, board, piece);
   }, piece.parlett)));
 });
 

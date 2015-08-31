@@ -140,6 +140,43 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
+  it('~2+ should return all possible moves', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 3})
+        })
+      ],
+    });
+    var p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    });
+    p.parlett = [{moveType: '~', direction: '+', distance: '2'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 4, y: 2},
+      //{x: 4, y: 3}, // Friendly piece in the way.
+      {x: 4, y: 5},
+      {x: 4, y: 6},
+      {y: 4, x: 2},
+      {y: 4, x: 3},
+      {y: 4, x: 5},
+      {y: 4, x: 6}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
   it('nX should return all possible moves', function() {
     var p = new Piece({
       name: 'bishop',
@@ -217,6 +254,11 @@ describe('Movement', function() {
         }),
         new Piece({
           name: 'rook',
+          color: 'white',
+          position: new Position({x: 6, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
           color: 'black',
           position: new Position({x: 2, y: 2})
         })
@@ -227,10 +269,57 @@ describe('Movement', function() {
     var expectedMoves = [
       //{x: 0, y: 0},
       //{x: 1, y: 1},
-      //{x: 2, y: 2}, // Blocked here.
+      {x: 2, y: 2}, // Black Piece
       {x: 3, y: 3},
       {x: 5, y: 5},
-      {x: 6, y: 6},
+      //{x: 6, y: 6}, // Blocked by white piece
+      //{x: 7, y: 7},
+      {x: 1, y: 7},
+      {x: 2, y: 6},
+      {x: 3, y: 5},
+      {x: 5, y: 3},
+      {x: 6, y: 2},
+      {x: 7, y: 1}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
+  it('~nX should return all possible moves', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'bishop',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 6, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 2, y: 2})
+        })
+      ],
+    });
+    var p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    });
+    p.parlett = [{moveType: '~', direction: 'X', distance: 'n'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 0, y: 0},
+      {x: 1, y: 1},
+      {x: 2, y: 2}, // Black Piece
+      {x: 3, y: 3},
+      {x: 5, y: 5},
+      //{x: 6, y: 6}, // Blocked by white piece
       {x: 7, y: 7},
       {x: 1, y: 7},
       {x: 2, y: 6},
