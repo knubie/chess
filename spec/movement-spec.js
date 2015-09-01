@@ -332,6 +332,28 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
+  it('~1(1/2) should return all possible moves', function() {
+    var p = new Piece({
+      name: 'knight',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    });
+    var actualMoves = Chess.getMoves(board, p);
+    console.log(actualMoves);
+    var expectedMoves = [
+      {x: 3, y: 2},
+      {x: 2, y: 3},
+      {x: 2, y: 5},
+      {x: 3, y: 6},
+      {x: 5, y: 6},
+      {x: 6, y: 5},
+      {x: 6, y: 3},
+      {x: 5, y: 2}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
   it('other pieces on the board should block n+', function() {
     var board = new Board({
       size: 8,

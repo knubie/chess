@@ -1,10 +1,14 @@
 var R = require('ramda');
 var Errors = require('./Errors');
+var pieces = require('./pieces');
 for (k in R) { global[k] = R[k]; }
 
 // TODO: R.assoc break this patter because it copies prototypes as well.
 // will need to assign the opts obj onto a this.__value member to avoid that.
 
+//  Game { turn :: String, board :: Board }
+var Game = function(opts) {
+}
 // Board { size :: Number, pieces :: [Piece] }
 var Board = function(opts) {
   if ( typeof opts !== 'object'
@@ -40,36 +44,7 @@ var Piece = function(opts) {
       this[k] = opts[k];
     }
   };
-  var pieces = {
-    'rook': {
-      parlett: [{
-        moveType: 'default',
-        direction: '+',
-        distance: 'n'
-      }]
-    },
-    'bishop': {
-      parlett: [{
-        moveType: 'default',
-        direction: 'X',
-        distance: 'n'
-      }]
-    },
-    'queen': {
-      parlett: [
-        {
-          moveType: 'default',
-          direction: 'X',
-          distance: 'n'
-        },
-        {
-          moveType: 'default',
-          direction: '+',
-          distance: 'n'
-        }
-      ]
-    },
-  };
+
   this.parlett = pieces[opts.name].parlett
 }
 
