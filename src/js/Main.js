@@ -249,12 +249,13 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
   //   return null;
   // }
   var piece = getAnyPieceAtPosition(board, startingPosition);
+  var capturedPiece = getAnyPieceAtPosition(board, endingPosition);
   if (contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
-      pieces: adjust(always(
-        new Piece(assoc('position', endingPosition, piece))
-      ), indexOf(piece, board.pieces), board.pieces)
+      pieces: adjust(compose(Piece.of, assoc('position', endingPosition))
+                   , indexOf(piece, board.pieces)
+                   , reject(equals(capturedPiece), board.pieces))
     });
   } else {
     return null;

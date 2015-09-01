@@ -339,7 +339,6 @@ describe('Movement', function() {
       position: new Position({x: 4, y: 4})
     });
     var actualMoves = Chess.getMoves(board, p);
-    console.log(actualMoves);
     var expectedMoves = [
       {x: 3, y: 2},
       {x: 2, y: 3},
@@ -529,6 +528,59 @@ describe('Movement', function() {
           name: 'rook',
           color: 'white',
           position: new Position({x: 3, y: 0})
+        }),
+      ],
+    });
+
+    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
+  });
+
+  it('movePiece should remove captured piece from the board', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 6, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 7, y: 5})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 0})
+        }),
+      ],
+    });
+
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 0})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 6, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 7, y: 5})
         }),
       ],
     });
