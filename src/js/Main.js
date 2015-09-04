@@ -113,41 +113,20 @@ var getDiagonalBlocking = curry(function(board, piece, position) {
 
 //  hippogonal :: (Number, Number, Number, Board, Piece) -> [Position]
 var hippogonal = curry(function(distance1, distance2, numMoves, board, piece) {
-  return [
-    new Position({
-      x: piece.position.x + distance1,
-      y: piece.position.y + distance2
-    }),
-    new Position({
-      x: piece.position.x + distance2,
-      y: piece.position.y + distance1
-    }),
-    new Position({
-      x: piece.position.x - distance1,
-      y: piece.position.y - distance2
-    }),
-    new Position({
-      x: piece.position.x - distance2,
-      y: piece.position.y - distance1
-    }),
 
-    new Position({
-      x: piece.position.x + distance1,
-      y: piece.position.y - distance2
-    }),
-    new Position({
-      x: piece.position.x + distance2,
-      y: piece.position.y - distance1
-    }),
-    new Position({
-      x: piece.position.x - distance1,
-      y: piece.position.y + distance2
-    }),
-    new Position({
-      x: piece.position.x - distance2,
-      y: piece.position.y + distance1
-    })
-  ]
+	return flatten(map(function(sign) {
+		return map(function(n) {
+			return new Position({
+				x: piece.position.x + sign[0] * ((n > 0) ? distance1 : distance2),
+				y: piece.position.y + sign[1] * ((n < 0) ? distance1 : distance2)
+			});
+		}, [1, -1]);
+	}, [
+		[1, 1],
+		[-1, -1],
+		[1, -1],
+		[-1, 1]
+	]));
 });
 
 var getHippogonalFunction = curry(function(notation) {

@@ -1,6 +1,6 @@
 var R = require('ramda');
 var Errors = require('./Errors');
-var pieces = require('./pieces');
+var pieces = require('./Pieces');
 for (k in R) { global[k] = R[k]; }
 
 // TODO: R.assoc break this patter because it copies prototypes as well.
