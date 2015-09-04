@@ -115,12 +115,12 @@ var getDiagonalBlocking = curry(function(board, piece, position) {
 var hippogonal = curry(function(distance1, distance2, numMoves, board, piece) {
 
   return flatten(map(function(sign) {
-    return map(function(axis) {
-      return new Position({
+    return map(Position.of)(map(function(axis) {
+      return {
         x: piece.position.x + sign[0] * ((axis === 'x') ? distance1 : distance2),
         y: piece.position.y + sign[1] * ((axis === 'y') ? distance1 : distance2)
-      });
-    }, ['x', 'y']);
+      };
+    }, ['x', 'y']));
   }, [
     [1, 1],
     [-1, -1],
