@@ -1,5 +1,24 @@
 # Chess
 
+## Piece ideas
+
+- Timekeeper - Piece that can roll back your clock.
+- Bloodlust - Piece that can move further with every piece it captures.
+- Giant - Piece that takes up more than one square.
+- Bomber - Piece that destroys all pieces in one block radius when captures.
+- Magnet - No enemy pieces can move within one-block radius.
+- Cannon - Can capture from a distance.
+- Wall - Cannot move or be captured. Useful for defense.
+- Teleporter - Can swap with any other piece. Moves like king.
+
+## Game settings
+
+Board sizes:
+
+- Regular: 8x8
+- Small: 6x6
+- Micro: 4x4
+
 ## Parlett's movement notation
 In his book The Oxford History of Board Games[3] David Parlett used a notation to describe fairy piece movements. The move is specified by an expression of the form m={expression}, where m stands for "move", and the expression is composed from the following elements:
 
