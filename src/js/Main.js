@@ -41,8 +41,8 @@ var orthogonal = curry(function(direction, distance, board, piece) {
                            range(piece.position[axis] + 1, maxD))));
 });
 
-//  getOrthogonalBlocking :: (Board, Piece, Position) -> Boolean
-var getOrthogonalBlocking = curry(function(board, piece, position) {
+//  orthogonallyBlockingPieces :: (Board, Piece, Position) -> Boolean
+var orthogonallyBlockingPieces = curry(function(board, piece, position) {
   check(arguments, [Board, Piece, Position]);
 
   var axis = position.x === piece.position.x ? 'y' : 'x';
@@ -97,8 +97,8 @@ var diagonal = curry(function(direction, distance, board, piece) {
   }
 });
 
-//  getDiagonalBlocking :: (Board, Piece, Position) -> Boolean
-var getDiagonalBlocking = curry(function(board, piece, position) {
+//  diagonallyBlockingPieces :: (Board, Piece, Position) -> Boolean
+var diagonallyBlockingPieces = curry(function(board, piece, position) {
   check(arguments, [Board, Piece, Position]);
   var x = position.x > piece.position.x ? add : subtract;
   var y = position.y > piece.position.y ? add : subtract;
@@ -192,6 +192,31 @@ var legalPosition = curry(function(board, position) {
   return position.x >= 0 && position.x < board.size && position.y >= 0 && position.y < board.size;
 });
 
+//  directionType :: String -> String
+var directionType = function(direction) {
+  check(arguments, [String]);
+  if (contains(direction, ['+', '>', '<', '<>', '=', '>=', '<='])) {
+    return 'orthogonal';
+  } else if (contains(direction, ['X', 'X>', 'X<'])) {
+    return 'diagonal';
+  } else if ( (/\d+\/\d+/).test(direction) ) {
+    return 'hippogonal';
+  } else {
+    return 'unknown';
+  }
+}
+
+//  blockingPieces :: String -> ( (Board, Piece, Position) -> Boolean )
+var blockingPieces = function(direction) {
+  check(arguments, [String]);
+  // Takes a parlett direction as 'direction' argument.
+  if (directionType(direction) === 'orthogonal') {
+    return orthogonallyBlockingPieces;
+  } else if (directionType(direction) === 'diagonal') {
+    return diagonallyBlockingPieces;
+  }
+}
+
 var movementTypes = {
   'orthogonal': orthogonal,
   'diagonal': diagonal
@@ -202,11 +227,11 @@ var jumperTypes = {
   'default': function(movementType, board, piece) {
     if (movementType === 'orthogonal') {
       return compose(
-        reject(getOrthogonalBlocking(board, piece)),
+        reject(orthogonallyBlockingPieces(board, piece)),
         orthogonal(__, __, board, piece));
     } else if (movementType === 'diagonal') {
       return compose(
-        reject(getDiagonalBlocking(board, piece)),
+        reject(diagonallyBlockingPieces(board, piece)),
         diagonal(__, __. board, piece));
     }
   }
@@ -216,7 +241,7 @@ var jumperTypes = {
 var pieceMovements = {
   'rook': converge(
             reject,
-              getOrthogonalBlocking, 
+              orthogonallyBlockingPieces, 
               converge(
                 concatAll,
                   orthogonal('sideways', 'n'),
@@ -227,23 +252,17 @@ var pieceMovements = {
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
-  //compose(uniq, flatten, map)
   return uniq(flatten(map(function(p) {
-    if (p.moveType === 'default' && contains(p.direction, ['+', '>', '<', '<>', '=', '>=', '<='])) {
-      //reject(getOrthogonalBlocking(board, piece)),
-      //return converge(reject, getOrthogonalBlocking,
-                              //directions[p.direction](p.distance))(board, piece);
-      //return pieceMovements[piece.name](board, piece);
-      return reject(getOrthogonalBlocking(board, piece),
+    if (p.moveType === 'default' &&
+        any(equals(directionType(p.direction)), ['orthogonal', 'diagonal']) ) {
+      return reject(blockingPieces(p.direction)(board, piece),
                     directions[p.direction](p.distance, board, piece));
-    } else if (p.moveType === 'default' && contains(p.direction, ['X', 'X>', 'X<'])) {
-      return reject(getDiagonalBlocking(board, piece),directions[p.direction](p.distance, board, piece));
-    } else if ( (/\d+\/\d+/).test(p.direction) ) {
-      return getHippogonalFunction(p.direction)(p.distance, board, piece);
-    } else {
+    } else if (directionType(p.direction) === 'hippogonal') {
+      var d = map(parseInt, p.direction.match(/(\d)\/(\d)/));
+      return hippogonal(d[1], d[2], p.distance, board, piece);
+    } else if (p.moveType === '~') {
       return directions[p.direction](p.distance, board, piece);
     }
-    //return directions[p.direction](p.distance, board, piece);
   }, piece.parlett)));
 });
 

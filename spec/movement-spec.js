@@ -85,7 +85,7 @@ describe('Movement', function() {
       color: 'white',
       position: new Position({x: 4, y: 4})
     });
-    p.parlett = [{direction: '+', distance: '2'}]
+    p.parlett = [{moveType: 'default', direction: '+', distance: '2'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 2},
@@ -107,7 +107,7 @@ describe('Movement', function() {
       color: 'white',
       position: new Position({x: 4, y: 4})
     });
-    p.parlett = [{direction: '>', distance: '2'}]
+    p.parlett = [{moveType: 'default', direction: '>', distance: '2'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 5},
@@ -123,7 +123,7 @@ describe('Movement', function() {
       color: 'white',
       position: new Position({x: 4, y: 4})
     });
-    p.parlett = [{direction: '<=', distance: '3'}]
+    p.parlett = [{moveType: 'default', direction: '<=', distance: '3'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 4, y: 1},
@@ -209,7 +209,7 @@ describe('Movement', function() {
       color: 'white',
       position: new Position({x: 4, y: 4})
     });
-    p.parlett = [{direction: 'X>', distance: 'n'}]
+    p.parlett = [{moveType: 'default', direction: 'X>', distance: 'n'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 5, y: 5},
@@ -228,7 +228,7 @@ describe('Movement', function() {
       color: 'white',
       position: new Position({x: 4, y: 4})
     });
-    p.parlett = [{direction: 'X<', distance: 'n'}]
+    p.parlett = [{moveType: 'default', direction: 'X<', distance: 'n'}]
     var actualMoves = Chess.getMoves(board, p);
     var expectedMoves = [
       {x: 0, y: 0},
