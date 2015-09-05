@@ -261,8 +261,7 @@ var getMoves = curry(function(board, piece) {
     return getPieceAtPosition(board, oppositeColor, position);
   }
   return uniq(flatten(map(function(p) {
-    // TODO: make moveType optional.
-    if (p.moveType === 'default' &&
+    if ((p.moveType === 'default' || p.moveType === undefined) &&
         any(equals(directionType(p.direction)), ['orthogonal', 'diagonal']) ) {
       var results = reject(blockingPieces(p.direction)(board, piece),
                     directions[p.direction](p.distance, board, piece));
@@ -298,12 +297,18 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
   // } else {
   //   return null;
   // }
+  //evolve({ position: always(endingPosition), moves: add(1) })
   var piece = getAnyPieceAtPosition(board, startingPosition);
   var capturedPiece = getAnyPieceAtPosition(board, endingPosition);
   if (contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
-      pieces: adjust(compose(Piece.of, assoc('position', endingPosition))
+      pieces: adjust(compose(
+                       Piece.of,
+                       //assoc('position', endingPosition))
+                       evolve({
+                         position: always(endingPosition),
+                         moves: add(1) }))
                    , indexOf(piece, board.pieces)
                    , reject(equals(capturedPiece), board.pieces))
     });
