@@ -13,6 +13,12 @@ module.exports = {
         moveType: 'default',
         direction: '>',
         distance: '1'
+      },
+      {
+        conditions: ['c'],
+        moveType: 'default',
+        direction: 'X>',
+        distance: '1'
       }
     ]
   },

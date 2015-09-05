@@ -222,6 +222,23 @@ describe('Movement', function() {
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
+
+  it('1X> should return all possible moves', function() {
+    var p = new Piece({
+      name: 'bishop',
+      color: 'white',
+      position: new Position({x: 3, y: 4})
+    });
+    p.parlett = [{moveType: 'default', direction: 'X>', distance: '1'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 4, y: 5},
+      {x: 2, y: 5}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
   it('nX< should return all possible moves', function() {
     var p = new Piece({
       name: 'bishop',
@@ -705,7 +722,31 @@ describe('Movement', function() {
       {x: 2, y: 3}
     ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
- 
+  });
+  it('parlett\'s "capture condition" should be met', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 1})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'black',
+          position: new Position({x: 1, y: 2})
+        }),
+      ],
+    });
 
+    var p = board.pieces[0];
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 2, y: 2},
+      {x: 2, y: 3},
+      {x: 1, y: 2}
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 });

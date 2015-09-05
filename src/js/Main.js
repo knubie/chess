@@ -72,7 +72,7 @@ var diagonal = curry(function(direction, distance, board, piece) {
   var move = curry(function(x, y, i) {
     return new Position({
       x: x(position.x, i),
-      y: y(position.x, i)
+      y: y(position.y, i)
     });
   });
   // forwards && white
@@ -253,22 +253,31 @@ var pieceMovements = {
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
   //return and(gt(parseInt(piece.moves), 0), contains('i', prop('conditions', p)));
-  var filterFn = function(p) {
+  var oppositeColor = piece.color === 'white' ? 'black' : 'white';
+  var initialFilter = function(p) {
     return contains('i', or(p.conditions, [])) && parseInt(piece.moves) > 0;
+  }
+  var captureFilter = function(position) {
+    return getPieceAtPosition(board, oppositeColor, position);
   }
   return uniq(flatten(map(function(p) {
     // TODO: make moveType optional.
     if (p.moveType === 'default' &&
         any(equals(directionType(p.direction)), ['orthogonal', 'diagonal']) ) {
-      return reject(blockingPieces(p.direction)(board, piece),
+      var results = reject(blockingPieces(p.direction)(board, piece),
                     directions[p.direction](p.distance, board, piece));
     } else if (directionType(p.direction) === 'hippogonal') {
       var d = map(parseInt, p.direction.match(/(\d)\/(\d)/));
-      return hippogonal(d[1], d[2], p.distance, board, piece);
+      var results = hippogonal(d[1], d[2], p.distance, board, piece);
     } else if (p.moveType === '~') {
-      return directions[p.direction](p.distance, board, piece);
+      var results = directions[p.direction](p.distance, board, piece);
     }
-  }, reject(filterFn, piece.parlett))));
+    if ( contains('c', or(p.conditions, [])) ) {
+      return filter(getPieceAtPosition(board, oppositeColor), results);
+    } else {
+      return results
+    }
+  }, reject(initialFilter, piece.parlett))));
 });
 
 //  getCaptures :: (Board, Piece) -> [Position]
