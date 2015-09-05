@@ -274,6 +274,8 @@ var getMoves = curry(function(board, piece) {
     }
     if ( contains('c', or(p.conditions, [])) ) {
       return filter(getPieceAtPosition(board, oppositeColor), results);
+    } else if ( contains('o', or(p.conditions, [])) ) {
+      return reject(getPieceAtPosition(board, oppositeColor), results);
     } else {
       return results
     }

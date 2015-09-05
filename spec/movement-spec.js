@@ -20,6 +20,7 @@ var board = new Board({
 var compare = function(arr1, arr2, i) {
   var i = i || 0;
   var position = arr1[i];
+  if (arr1.length === 0 && arr2.length === 0) { return true; }
   if ( any(equals(position), arr2) ) { 
     if (i === arr1.length - 1 && arr2.length === 1) {
       return true;
@@ -723,6 +724,7 @@ describe('Movement', function() {
     ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
+
   it('parlett\'s "capture condition" should be met', function() {
     var board = new Board({
       size: 8,
@@ -747,6 +749,41 @@ describe('Movement', function() {
       {x: 2, y: 3},
       {x: 1, y: 2}
     ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
+  it('parlett\'s "!capture condition" should be met', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 0})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'black',
+          position: new Position({x: 2, y: 2})
+        }),
+      ],
+    });
+
+    var p = board.pieces[0];
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 2, y: 1},
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+
+    var p2 = Piece.of({
+      name: 'pawn',
+      color: 'white',
+      position: new Position({x: 2, y: 1}),
+      moves: '1'
+    });
+    var actualMoves = Chess.getMoves(board, p2);
+    var expectedMoves = [ ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 });
