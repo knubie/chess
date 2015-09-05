@@ -113,41 +113,45 @@ var getDiagonalBlocking = curry(function(board, piece, position) {
 
 //  hippogonal :: (Number, Number, Number, Board, Piece) -> [Position]
 var hippogonal = curry(function(distance1, distance2, numMoves, board, piece) {
-  return [
-    new Position({
-      x: piece.position.x + distance1,
-      y: piece.position.y + distance2
-    }),
-    new Position({
-      x: piece.position.x + distance2,
-      y: piece.position.y + distance1
-    }),
-    new Position({
-      x: piece.position.x - distance1,
-      y: piece.position.y - distance2
-    }),
-    new Position({
-      x: piece.position.x - distance2,
-      y: piece.position.y - distance1
-    }),
+  var oppositeColor = piece.color === 'white' ? 'black' : 'white';
 
-    new Position({
-      x: piece.position.x + distance1,
-      y: piece.position.y - distance2
-    }),
-    new Position({
-      x: piece.position.x + distance2,
-      y: piece.position.y - distance1
-    }),
-    new Position({
-      x: piece.position.x - distance1,
-      y: piece.position.y + distance2
-    }),
-    new Position({
-      x: piece.position.x - distance2,
-      y: piece.position.y + distance1
-    })
-  ]
+  return filter(identity, flatten(
+    map(function(fns) {
+      var i = 1;
+      var fn = function(pos) {
+        var p = Position.of(evolve({
+          x: fns[0],
+          y: fns[1]
+        }, pos));
+        if (legalPosition(board, p)) {
+          if (getPieceAtPosition(board, oppositeColor, p)) {
+            return p;
+          } else if (getPieceAtPosition(board, piece.color, p)) {
+            return null;
+          } else {
+            if ( numMoves === 'n' || i < numMoves) {
+              i = i + 1;
+              return [p, fn(p)];
+            } else {
+              return p;
+            }
+          }
+        } else {
+          return null;
+        }
+      }
+      return fn(piece.position);
+    }, [
+      [add(distance1),          add(distance2)],
+      [add(distance2),          add(distance1)],
+      [subtract(__, distance1), subtract(__, distance2)],
+      [subtract(__, distance2), subtract(__, distance1)],
+      [add(distance1),          subtract(__, distance2)],
+      [add(distance2),          subtract(__, distance1)],
+      [subtract(__, distance1), add(distance2)],
+      [subtract(__, distance2), add(distance1)]
+    ])
+  ));
 });
 
 var getHippogonalFunction = curry(function(notation) {
@@ -209,6 +213,16 @@ var jumperTypes = {
 }
 
 //jumperTypes[p.jumperType](p.movementType, board, piece)(p.direction, p.distance)
+var pieceMovements = {
+  'rook': converge(
+            reject,
+              getOrthogonalBlocking, 
+              converge(
+                concatAll,
+                  orthogonal('sideways', 'n'),
+                  orthogonal('backwards', 'n'),
+                  orthogonal('forwards', 'n')) )
+}
 
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
@@ -219,6 +233,7 @@ var getMoves = curry(function(board, piece) {
       //reject(getOrthogonalBlocking(board, piece)),
       //return converge(reject, getOrthogonalBlocking,
                               //directions[p.direction](p.distance))(board, piece);
+      //return pieceMovements[piece.name](board, piece);
       return reject(getOrthogonalBlocking(board, piece),
                     directions[p.direction](p.distance, board, piece));
     } else if (p.moveType === 'default' && contains(p.direction, ['X', 'X>', 'X<'])) {

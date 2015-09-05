@@ -7,10 +7,11 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var connect = require('gulp-connect');
+var jasmine = require('gulp-jasmine');
 
 gulp.task('browserify', function() {
   appBundler = browserify({
-    entries: './src/js/index.js',
+    entries: './src/js/Main.js',
     debug: true, // TODO use IS_DEV boolean
     cache: {},
     packageCache: {}
@@ -46,9 +47,15 @@ gulp.task('moveAssets', function() {
   return gulp.src('./assets/**/*').pipe(gulp.dest('./pub/assets/'));
 });
 
+gulp.task('jasmine', function() {
+ gulp.src('./spec/*-spec.js')
+  .pipe(jasmine());
+});
+
 gulp.task('watch', function(){
   gulp.watch('./src/index.html', ['moveIndex']);
   gulp.watch('./assets/**/*', ['moveAssets']);
+  //gulp.watch('./src/js/*.js', ['jasmine']);
 });
 
 gulp.task('serve', function() {

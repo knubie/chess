@@ -353,6 +353,36 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
+  it('~n(1/2) should return all possible moves', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 5, y: 3})
+        })
+      ],
+    });
+    var p = new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 1, y: 1})
+    });
+    p.parlett = [{moveType: '~', direction: '1/2', distance: 'n'}]
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 3, y: 0},
+      {x: 3, y: 2},
+      {x: 0, y: 3},
+      {x: 2, y: 3},
+      {x: 3, y: 5},
+      {x: 4, y: 7},
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
   it('other pieces on the board should block n+', function() {
     var board = new Board({
       size: 8,
