@@ -36,6 +36,20 @@ module.exports = {
       distance: 'n'
     }]
   },
+  'wazir': {
+    parlett: [{
+      moveType: 'default',
+      direction: '+',
+      distance: '1'
+    }]
+  },
+  'ferz': {
+    parlett: [{
+      moveType: 'default',
+      direction: 'X',
+      distance: '1'
+    }]
+  },
   'knight': {
     parlett: [{
       moveType: '~',
@@ -54,6 +68,20 @@ module.exports = {
         moveType: 'default',
         direction: '+',
         distance: 'n'
+      }
+    ]
+  },
+  'king': {
+    parlett: [
+      {
+        moveType: 'default',
+        direction: 'X',
+        distance: '1'
+      },
+      {
+        moveType: 'default',
+        direction: '+',
+        distance: '1'
       }
     ]
   },
