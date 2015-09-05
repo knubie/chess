@@ -252,7 +252,12 @@ var pieceMovements = {
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
+  //return and(gt(parseInt(piece.moves), 0), contains('i', prop('conditions', p)));
+  var filterFn = function(p) {
+    return contains('i', or(p.conditions, [])) && parseInt(piece.moves) > 0;
+  }
   return uniq(flatten(map(function(p) {
+    // TODO: make moveType optional.
     if (p.moveType === 'default' &&
         any(equals(directionType(p.direction)), ['orthogonal', 'diagonal']) ) {
       return reject(blockingPieces(p.direction)(board, piece),
@@ -263,7 +268,7 @@ var getMoves = curry(function(board, piece) {
     } else if (p.moveType === '~') {
       return directions[p.direction](p.distance, board, piece);
     }
-  }, piece.parlett)));
+  }, reject(filterFn, piece.parlett))));
 });
 
 //  getCaptures :: (Board, Piece) -> [Position]

@@ -673,4 +673,39 @@ describe('Movement', function() {
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
+
+  it('parlett\'s "initial condition" should be met', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 1})
+        })
+      ],
+    });
+
+    var p = board.pieces[0];
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 2, y: 2},
+      {x: 2, y: 3}
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+
+    var p2 = Piece.of({
+      name: 'pawn',
+      color: 'white',
+      position: new Position({x: 2, y: 2}),
+      moves: '1'
+    });
+    var actualMoves = Chess.getMoves(board, p2);
+    var expectedMoves = [
+      {x: 2, y: 3}
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+ 
+
+  });
 });

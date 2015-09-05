@@ -45,7 +45,8 @@ var Piece = function(opts) {
     }
   };
 
-  this.parlett = pieces[opts.name].parlett
+  this.parlett = pieces[opts.name].parlett;
+  this.moves = this.moves || '0';
 }
 
 Piece.of = function(x) { return new Piece(x); };

@@ -1,4 +1,21 @@
+// TODO: make moveType optional.
 module.exports = {
+  'pawn': {
+    parlett: [
+      {
+        conditions: ['i', 'o'],
+        moveType: 'default',
+        direction: '>',
+        distance: '2'
+      },
+      {
+        conditions: ['o'],
+        moveType: 'default',
+        direction: '>',
+        distance: '1'
+      }
+    ]
+  },
   'rook': {
     parlett: [{
       moveType: 'default',
