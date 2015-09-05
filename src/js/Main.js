@@ -115,7 +115,7 @@ var diagonallyBlockingPieces = curry(function(board, piece, position) {
 var hippogonal = curry(function(distance1, distance2, numMoves, board, piece) {
   var oppositeColor = piece.color === 'white' ? 'black' : 'white';
 
-  return filter(identity, flatten(
+  return uniq(filter(identity, flatten(
     map(function(fns) {
       var i = 1;
       var fn = function(pos) {
@@ -151,7 +151,7 @@ var hippogonal = curry(function(distance1, distance2, numMoves, board, piece) {
       [subtract(__, distance1), add(distance2)],
       [subtract(__, distance2), add(distance1)]
     ])
-  ));
+  )));
 });
 
 var getHippogonalFunction = curry(function(notation) {
