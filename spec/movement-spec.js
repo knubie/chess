@@ -455,6 +455,82 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
+  it('gun type pieces should be able to capture without moving', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'cannon',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 3, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 0})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 0, y: 4})
+        })
+      ],
+    });
+    var p = board.pieces[0];
+    var actualMoves = Chess.getMoves(board, p);
+    var expectedMoves = [
+      {x: 4, y: 3},
+      {x: 5, y: 4},
+      {x: 4, y: 5},
+      //{x: 3, y: 4}, // White rook
+      {x: 4, y: 6}, // Black rook
+      {x: 4, y: 0} // Black rook
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+
+
+    var actualBoard = Chess.movePiece(board, Position.of({x: 4, y: 4}), Position.of({x: 4, y: 6}));
+    console.log(actualBoard.pieces);
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'cannon',
+          color: 'white',
+          position: new Position({x: 4, y: 4}),
+          moves: 1
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 3, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 0})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 0, y: 4})
+        })
+      ],
+    });
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
+  });
+
   it('get captures should return a list of capturable positions for n+', function() {
     var board = new Board({
       size: 8,

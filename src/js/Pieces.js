@@ -20,28 +20,32 @@ module.exports = {
         direction: 'X>',
         distance: '1'
       }
-    ]
+    ],
+    points: 1
   },
   'rook': {
     parlett: [{
       moveType: 'default',
       direction: '+',
       distance: 'n'
-    }]
+    }],
+    points: 5
   },
   'bishop': {
     parlett: [{
       moveType: 'default',
       direction: 'X',
       distance: 'n'
-    }]
+    }],
+    points: 3.5
   },
   'knight': {
     parlett: [{
       moveType: '~',
       direction: '1/2',
       distance: '1'
-    }]
+    }],
+    points: 3
   },
   'queen': {
     parlett: [
@@ -55,7 +59,8 @@ module.exports = {
         direction: '+',
         distance: 'n'
       }
-    ]
+    ],
+    points: 8
   },
   'king': {
     parlett: [
@@ -68,6 +73,31 @@ module.exports = {
         moveType: 'default',
         direction: '+',
         distance: '1'
+      }
+    ],
+    points: 5,
+    royal: true
+  },
+  ///////// Custom pieces //////////
+  'cannon': {
+    parlett: [
+      {
+        conditions: ['o'],
+        moveType: 'default',
+        direction: '+',
+        distance: '1'
+      },
+      {
+        conditions: ['c'],
+        moveType: 'gun',
+        direction: '+',
+        distance: 'n'
+      },
+      {
+        conditions: ['c'],
+        moveType: 'gun',
+        direction: 'X',
+        distance: 'n'
       }
     ]
   },

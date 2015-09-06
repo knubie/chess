@@ -34,7 +34,6 @@ var orthogonal = curry(function(direction, distance, board, piece) {
     maxD = piece.position[axis] + 1;
   }
 
-  // TODO: only check orthogonalBlocking if piece is not a jumper
   return reject(getPieceAtPosition(board, piece.color),
                 map(compose(Position.of, assoc(axis, __, piece.position)),
                     concat(range(minD, piece.position[axis]),
@@ -176,6 +175,7 @@ var directions = {
 //  getPieceAtPosition :: (Board, String, Position) -> Maybe Piece
 var getPieceAtPosition = curry(function(board, color, position) {
   check(arguments, [Board, String, Position]);
+  //var positionAndColor = where({position: equals(position), color: equals(color)});
   var positionAndColor = both(propEq('position', position), propEq('color', color));
   return find(positionAndColor, board.pieces);
 });
@@ -217,38 +217,6 @@ var blockingPieces = function(direction) {
   }
 }
 
-var movementTypes = {
-  'orthogonal': orthogonal,
-  'diagonal': diagonal
-}
-
-var jumperTypes = {
-  '~': function(movement) { return movement; },
-  'default': function(movementType, board, piece) {
-    if (movementType === 'orthogonal') {
-      return compose(
-        reject(orthogonallyBlockingPieces(board, piece)),
-        orthogonal(__, __, board, piece));
-    } else if (movementType === 'diagonal') {
-      return compose(
-        reject(diagonallyBlockingPieces(board, piece)),
-        diagonal(__, __. board, piece));
-    }
-  }
-}
-
-//jumperTypes[p.jumperType](p.movementType, board, piece)(p.direction, p.distance)
-var pieceMovements = {
-  'rook': converge(
-            reject,
-              orthogonallyBlockingPieces, 
-              converge(
-                concatAll,
-                  orthogonal('sideways', 'n'),
-                  orthogonal('backwards', 'n'),
-                  orthogonal('forwards', 'n')) )
-}
-
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
@@ -257,12 +225,11 @@ var getMoves = curry(function(board, piece) {
   var initialFilter = function(p) {
     return contains('i', or(p.conditions, [])) && parseInt(piece.moves) > 0;
   }
-  var captureFilter = function(position) {
-    return getPieceAtPosition(board, oppositeColor, position);
-  }
   return uniq(flatten(map(function(p) {
-    if ((p.moveType === 'default' || p.moveType === undefined) &&
-        any(equals(directionType(p.direction)), ['orthogonal', 'diagonal']) ) {
+    //if ( anyPass(propEq('default'), propEq(undefined), propEq('gun'), p.moveType) )
+    //if ( where({moveType: anyPass([equals('default'), equals(undefined), equals('gun')])}, p) )
+    if (contains(p.moveType, ['default', 'gun', undefined]) &&
+        contains(directionType(p.direction), ['orthogonal', 'diagonal'])) {
       var results = reject(blockingPieces(p.direction)(board, piece),
                     directions[p.direction](p.distance, board, piece));
     } else if (directionType(p.direction) === 'hippogonal') {
@@ -297,17 +264,22 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
   // } else {
   //   return null;
   // }
-  //evolve({ position: always(endingPosition), moves: add(1) })
   var piece = getAnyPieceAtPosition(board, startingPosition);
   var capturedPiece = getAnyPieceAtPosition(board, endingPosition);
+  var newPosition = always(endingPosition);
+  // FIXME: This seems wrong. It will only work if all 'gun' pieces have
+  // conditions: ['c'] with every moveType: 'gun' entry, and
+  // conditions: ['o'] for every non-gun moveType entry.
+  if (capturedPiece && any(propEq('moveType', 'gun'), piece.parlett)) {
+    newPosition = always(startingPosition);
+  }
   if (contains(endingPosition, getMoves(board, piece))) {
     return new Board({
       size: board.size,
       pieces: adjust(compose(
                        Piece.of,
-                       //assoc('position', endingPosition))
                        evolve({
-                         position: always(endingPosition),
+                         position: newPosition,
                          moves: add(1) }))
                    , indexOf(piece, board.pieces)
                    , reject(equals(capturedPiece), board.pieces))
@@ -317,4 +289,19 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
   }
 });
 
-module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures };
+//  isGameOver :: (Board, String) -> Maybe Boolean
+var isGameOver = curry(function(board, color) {
+  return not(any(where({
+                   color: equals(color),
+                   royal: equals(true)
+                 }), board.pieces));
+});
+
+//  addPiece :: ([Piece], Piece) -> [Piece]
+var addPiece = curry(function(pieces, piece) {
+  return append(piece, reject(propEq('position', piece.position), pieces))
+});
+
+//  
+
+module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures, addPiece: addPiece };
