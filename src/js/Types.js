@@ -8,7 +8,19 @@ for (k in R) { global[k] = R[k]; }
 
 //  Game { turn :: String, board :: Board }
 var Game = function(opts) {
+  if ( typeof opts !== 'object'
+    || typeof opts.turn !== 'string'
+    || not(is(Board, opts.board))) {
+    throw new Errors.TypeClassError('Invalid Game options.');
+  }
+  for (k in opts) {
+    if (opts.hasOwnProperty(k)) {
+      this[k] = opts[k];
+    }
+  };
 }
+Game.of = function(x) { return new Game(x); };
+
 // Board { size :: Number, pieces :: [Piece] }
 var Board = function(opts) {
   if ( typeof opts !== 'object'
@@ -73,4 +85,4 @@ Position.of = function(x) { return new Position(x); };
   //return Position.of(f(this))
 //}
 
-module.exports = { Board: Board, Piece: Piece, Position: Position };
+module.exports = { Game: Game, Board: Board, Piece: Piece, Position: Position };
