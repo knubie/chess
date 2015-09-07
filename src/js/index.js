@@ -24,6 +24,6 @@ var board = Types.Board.of({
 });
 
 React.render(
-  <Board data={board} />,
+  <Board board={board} />,
   document.getElementById('container')
 );
