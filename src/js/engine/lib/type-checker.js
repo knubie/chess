@@ -6,7 +6,7 @@ for (var k in R) {
 }
 
 var checkType = curry(function(arg, x) {
-  var t
+  var tt;
   if (x === String) {
     tt = equals(type(arg), 'String');
   } else if (x === Number) {
