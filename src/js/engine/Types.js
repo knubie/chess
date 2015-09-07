@@ -1,7 +1,10 @@
 var R = require('ramda');
 var Errors = require('./Errors');
 var pieces = require('./Pieces');
-for (k in R) { global[k] = R[k]; }
+for (var k in R) {
+  var topLevel = typeof global === 'undefined' ? window : global;
+  topLevel[k] = R[k];
+}
 
 // TODO: R.assoc break this patter because it copies prototypes as well.
 // will need to assign the opts obj onto a this.__value member to avoid that.

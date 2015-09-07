@@ -1,9 +1,12 @@
 var R        = require('ramda');
-var Board    = require('../src/js/Types').Board;
-var Piece    = require('../src/js/Types').Piece;
-var Position = require('../src/js/Types').Position;
-var Chess    = require('../src/js/Main.js')
-for (k in R) { global[k] = R[k]; }
+var Board    = require('../src/js/engine/Types').Board;
+var Piece    = require('../src/js/engine/Types').Piece;
+var Position = require('../src/js/engine/Types').Position;
+var Chess    = require('../src/js/engine/Main.js')
+for (k in R) {
+  var topLevel = typeof global === 'undefined' ? window : global;
+  topLevel[k] = R[k];
+}
 
 var board = new Board({
   size: 8,
@@ -501,7 +504,6 @@ describe('Movement', function() {
 
 
     var actualBoard = Chess.movePiece(board, Position.of({x: 4, y: 4}), Position.of({x: 4, y: 6}));
-    console.log(actualBoard.pieces);
     var expectedBoard = new Board({
       size: 8,
       pieces: [

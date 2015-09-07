@@ -4,14 +4,17 @@ var gutil = require('gulp-util');
 // Browserify
 var watchify = require('watchify');
 var browserify = require('browserify');
+var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+
 var connect = require('gulp-connect');
 var jasmine = require('gulp-jasmine');
 
 gulp.task('browserify', function() {
   appBundler = browserify({
-    entries: './src/js/Main.js',
+    entries: './src/js/index.js',
+    transform: [babelify],
     debug: true, // TODO use IS_DEV boolean
     cache: {},
     packageCache: {}

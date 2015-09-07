@@ -1,9 +1,9 @@
 var R        = require('ramda');
-var Game     = require('../src/js/Types').Game;
-var Board    = require('../src/js/Types').Board;
-var Piece    = require('../src/js/Types').Piece;
-var Position = require('../src/js/Types').Position;
-var Chess    = require('../src/js/Main.js')
+var Game     = require('../src/js/engine/Types').Game;
+var Board    = require('../src/js/engine/Types').Board;
+var Piece    = require('../src/js/engine/Types').Piece;
+var Position = require('../src/js/engine/Types').Position;
+var Chess    = require('../src/js/engine/Main.js')
 for (k in R) { global[k] = R[k]; }
 
 // :: ([position], [position], Number) -> Boolean
@@ -38,7 +38,7 @@ describe('Game', function() {
       })
     })
   });
-  it('Shouldn\'t be able to make an army that exceeds 45 points', function() {
+  it('Adding a piece in a position that\'s already occupied should replace that piece', function() {
     var pieces = [
       Piece.of({
         name: 'rook',

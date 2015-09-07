@@ -5,7 +5,10 @@ var Board    = require('./Types').Board;
 var Piece    = require('./Types').Piece;
 var Position = require('./Types').Position;
 
-for (var k in R) { global[k] = R[k]; }
+for (var k in R) {
+  var topLevel = typeof global === 'undefined' ? window : global;
+  topLevel[k] = R[k];
+}
 var concatAll = unapply(reduce(concat, []));
 
 //  between :: (Number, Number) -> [Number]

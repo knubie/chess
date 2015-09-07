@@ -1,6 +1,9 @@
 var R = require('ramda');
 var Errors = require('../Errors');
-for (k in R) { global[k] = R[k]; }
+for (var k in R) {
+  var topLevel = typeof global === 'undefined' ? window : global;
+  topLevel[k] = R[k];
+}
 
 var checkType = curry(function(arg, x) {
   var t
