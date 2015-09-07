@@ -9,6 +9,7 @@ var connect = require('gulp-connect');
 var jasmine = require('gulp-jasmine');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
+var notify = require('gulp-notify');
 
 gulp.task('browserify', function() {
   appBundler = browserify({
@@ -23,7 +24,15 @@ gulp.task('browserify', function() {
     var start = Date.now();
     gutil.log('Building browserify bundle');
     appBundler.bundle()
-      .on('error', function(err) { gutil.log(gutil.colors.red(err.message)); })
+      .on('error', function(err) {
+        notify.logLevel(0);
+        notify.onError({
+          title: 'Javascript compile error',
+          message: err.message,
+          sound: 'Sosumi'
+        })(err);
+        gutil.log(gutil.colors.red(err.message));
+      })
       .pipe(source('bundle.js'))
       .pipe(buffer())
       .pipe(gulp.dest('./pub/js'))
@@ -79,4 +88,4 @@ gulp.task('serve', function() {
   });
 });
 
-gulp.task('default', ['browserify', 'moveAssets', 'moveIndex', 'watch', 'serve']);
+gulp.task('default', ['browserify', 'moveAssets', 'moveIndex', 'sass', 'watch', 'serve']);
