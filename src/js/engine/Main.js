@@ -277,16 +277,16 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
     newPosition = always(startingPosition);
   }
   if (contains(endingPosition, getMoves(board, piece))) {
-    var newBoard = reject(equals(capturedPiece), board.pieces);
     return new Board({
       size: board.size,
-      pieces: adjust(compose(
+      pieces: reject(equals(capturedPiece),
+                     adjust(compose(
                        Piece.of,
                        evolve({
                          position: newPosition,
                          moves: add(1) }))
-                   , indexOf(piece, newBoard)
-                   , newBoard)
+                     , indexOf(piece, board.pieces)
+                     , board.pieces))
     });
   } else {
     return null;

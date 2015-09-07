@@ -671,11 +671,6 @@ describe('Movement', function() {
         new Piece({
           name: 'rook',
           color: 'white',
-          position: new Position({x: 4, y: 4})
-        }),
-        new Piece({
-          name: 'rook',
-          color: 'white',
           position: new Position({x: 6, y: 6})
         }),
         new Piece({
@@ -688,6 +683,11 @@ describe('Movement', function() {
           color: 'black',
           position: new Position({x: 4, y: 0})
         }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
       ],
     });
 
@@ -697,18 +697,18 @@ describe('Movement', function() {
         new Piece({
           name: 'rook',
           color: 'white',
-          position: new Position({x: 4, y: 0}),
-          moves: 1
-        }),
-        new Piece({
-          name: 'rook',
-          color: 'white',
           position: new Position({x: 6, y: 6})
         }),
         new Piece({
           name: 'rook',
           color: 'white',
           position: new Position({x: 7, y: 5})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 0}),
+          moves: 1
         }),
       ],
     });
