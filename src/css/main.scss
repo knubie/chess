@@ -15,6 +15,7 @@ $unit: 50px;
       width: $unit;
       height: $unit;
       float: left;
+      z-index: 0;
     }
     &:nth-of-type(odd) {
       .square:nth-of-type(even) {
@@ -27,14 +28,10 @@ $unit: 50px;
       }
     }
   }
-  .piece {
-    cursor: pointer;
-    position: absolute;
-    font-size: 44px;
-    line-height: 1.1em;
-    text-align: center;
+  @mixin grid-unit {
     width: $unit;
     height: $unit;
+    position: absolute;
     @for $size from 0 through 11 {
       &.x-#{$size} {
         left: $size * $unit;
@@ -43,6 +40,18 @@ $unit: 50px;
         bottom: $size * $unit;
       }
     }
-
+  }
+  .move-square {
+    background-color: rgba(0,120,255,0.1);
+    @include grid-unit;
+    z-index: 1;
+  }
+  .piece {
+    cursor: pointer;
+    font-size: 44px;
+    line-height: 1.1em;
+    text-align: center;
+    @include grid-unit;
+    z-index: 2;
   }
 }

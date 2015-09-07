@@ -1,6 +1,9 @@
 var React = require('react');
 
 var Piece = React.createClass({
+  onClick: function() {
+    this.props.onClick(this.props.data);
+  },
   render: function() {
     var pieceLookup = {
       white: {
@@ -20,10 +23,14 @@ var Piece = React.createClass({
         pawn: '&#9823'
       }
     }
-    var className = "piece x-" + this.props.x + " y-" + this.props.y;
+    var className = "piece x-" + this.props.data.position.x + " y-" + this.props.data.position.y;
     return (
-      <div className={className}>
-        <span dangerouslySetInnerHTML={{__html: pieceLookup[this.props.color][this.props.name]}} />
+      <div className={className} onClick={this.onClick}>
+        <span
+          dangerouslySetInnerHTML={{
+            __html: pieceLookup[this.props.data.color][this.props.data.name]
+          }}
+        />
         {this.props.children}
       </div>
     );

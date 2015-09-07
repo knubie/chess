@@ -15,6 +15,11 @@ var board = Types.Board.of({
       color: 'white',
       position: Types.Position.of({x: 3, y: 4})
     }),
+    Types.Piece.of({
+      name: 'pawn',
+      color: 'black',
+      position: Types.Position.of({x: 3, y: 7})
+    }),
   ],
 });
 
