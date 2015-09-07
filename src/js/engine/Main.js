@@ -277,6 +277,7 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
     newPosition = always(startingPosition);
   }
   if (contains(endingPosition, getMoves(board, piece))) {
+    var newBoard = reject(equals(capturedPiece), board.pieces);
     return new Board({
       size: board.size,
       pieces: adjust(compose(
@@ -284,8 +285,8 @@ var movePiece = curry(function(board, startingPosition, endingPosition) {
                        evolve({
                          position: newPosition,
                          moves: add(1) }))
-                   , indexOf(piece, board.pieces)
-                   , reject(equals(capturedPiece), board.pieces))
+                   , indexOf(piece, newBoard)
+                   , newBoard)
     });
   } else {
     return null;
