@@ -1,0 +1,48 @@
+$unit: 50px;
+
+.chess-board {
+  border: 1px solid #999;
+  position: relative;
+  user-select: none;
+  @for $size from 1 through 12 {
+    &.size-#{$size} {
+      width: $size * $unit;
+      height: $size * $unit;
+    }
+  }
+  .row {
+    .square {
+      width: $unit;
+      height: $unit;
+      float: left;
+    }
+    &:nth-of-type(odd) {
+      .square:nth-of-type(even) {
+        background-color: #eee;
+      }
+    }
+    &:nth-of-type(even) {
+      .square:nth-of-type(odd) {
+        background-color: #eee;
+      }
+    }
+  }
+  .piece {
+    cursor: pointer;
+    position: absolute;
+    font-size: 44px;
+    line-height: 1.1em;
+    text-align: center;
+    width: $unit;
+    height: $unit;
+    @for $size from 0 through 11 {
+      &.x-#{$size} {
+        left: $size * $unit;
+      }
+      &.y-#{$size} {
+        bottom: $size * $unit;
+      }
+    }
+
+  }
+}

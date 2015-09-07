@@ -1,15 +1,14 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-
-// Browserify
 var watchify = require('watchify');
 var browserify = require('browserify');
 var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-
 var connect = require('gulp-connect');
 var jasmine = require('gulp-jasmine');
+var sass = require('gulp-sass');
+var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('browserify', function() {
   appBundler = browserify({
@@ -50,6 +49,16 @@ gulp.task('moveAssets', function() {
   return gulp.src('./assets/**/*').pipe(gulp.dest('./pub/assets/'));
 });
 
+gulp.task('sass', function() {
+  gulp.src('./src/css/main.scss')
+    .pipe(sourcemaps.init())
+    .pipe(sass({
+      errLogToConsole: true
+    }))
+    .pipe(sourcemaps.write('./maps'))
+    .pipe(gulp.dest('./pub/css/'));
+});
+
 gulp.task('jasmine', function() {
  gulp.src('./spec/*-spec.js')
   .pipe(jasmine());
@@ -57,6 +66,7 @@ gulp.task('jasmine', function() {
 
 gulp.task('watch', function(){
   gulp.watch('./src/index.html', ['moveIndex']);
+  gulp.watch('./src/css/*.scss', ['sass']);
   gulp.watch('./assets/**/*', ['moveAssets']);
   //gulp.watch('./src/js/*.js', ['jasmine']);
 });
