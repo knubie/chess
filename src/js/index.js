@@ -20,6 +20,21 @@ var board = Types.Board.of({
       color: 'black',
       position: Types.Position.of({x: 3, y: 7})
     }),
+    Types.Piece.of({
+      name: 'pawn',
+      color: 'black',
+      position: Types.Position.of({x: 2, y: 7})
+    }),
+    Types.Piece.of({
+      name: 'pawn',
+      color: 'black',
+      position: Types.Position.of({x: 1, y: 7})
+    }),
+    Types.Piece.of({
+      name: 'pawn',
+      color: 'black',
+      position: Types.Position.of({x: 0, y: 7})
+    }),
   ],
 });
 

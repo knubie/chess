@@ -1,4 +1,7 @@
 $unit: 50px;
+$square-index: 0;
+$piece-index: 1;
+$move-square-index: 2;
 
 .chess-board {
   border: 1px solid #999;
@@ -15,7 +18,7 @@ $unit: 50px;
       width: $unit;
       height: $unit;
       float: left;
-      z-index: 0;
+      z-index: $square-index;
     }
     &:nth-of-type(odd) {
       .square:nth-of-type(even) {
@@ -43,8 +46,9 @@ $unit: 50px;
   }
   .move-square {
     background-color: rgba(0,120,255,0.1);
+    cursor: pointer;
     @include grid-unit;
-    z-index: 1;
+    z-index: $move-square-index;
   }
   .piece {
     cursor: pointer;
@@ -52,6 +56,6 @@ $unit: 50px;
     line-height: 1.1em;
     text-align: center;
     @include grid-unit;
-    z-index: 2;
+    z-index: $piece-index;
   }
 }
