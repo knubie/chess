@@ -23,7 +23,9 @@ var Piece = React.createClass({
         pawn: '&#9823'
       }
     }
-    var className = "piece x-" + this.props.piece.position.x + " y-" + this.props.piece.position.y;
+    var className = "piece" +
+                    " x-" + this.props.piece.position.x +
+                    " y-" + this.props.piece.position.y;
     return (
       <div className={className} onClick={this.onClick}>
         <span
@@ -31,7 +33,6 @@ var Piece = React.createClass({
             __html: pieceLookup[this.props.piece.color][this.props.piece.name]
           }}
         />
-        {this.props.children}
       </div>
     );
   }
