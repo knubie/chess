@@ -48,17 +48,11 @@ var orthogonallyBlockingPieces = curry(function(board, piece, position) {
   check(arguments, [Board, Piece, Position]);
 
   var axis = position.x === piece.position.x ? 'y' : 'x';
-  //// compose is broken in v16 or v17...
-  //return any(
-    //compose(
-      //getAnyPieceAtPosition(board),
-      ////getPosition(axis)
-      //compose(Position.of, assoc(axis, __, piece.position))
-    //), between(position[axis], piece.position[axis]));
-  return any(function(j) {
-    return getAnyPieceAtPosition(board,
-             Position.of(assoc(axis, j, piece.position)));
-  }, between(position[axis], piece.position[axis]));
+  return any(
+    compose(
+      getAnyPieceAtPosition(board),
+      compose(Position.of, assoc(axis, __, piece.position))
+    ), between(position[axis], piece.position[axis]));
 });
 
 //  diagonal :: (String, Either String | Number, Board, Piece) -> [Position]
@@ -184,10 +178,10 @@ var getPieceAtPosition = curry(function(board, color, position) {
 });
 
 //  getAnyPieceAtPosition :: (Board, Position) -> Maybe Piece
-var getAnyPieceAtPosition = either(
-  getPieceAtPosition(__, 'white', __),
-  getPieceAtPosition(__, 'black', __)
-);
+var getAnyPieceAtPosition = curry(function(board, position) {
+  return getPieceAtPosition(board, 'white', position) ||
+         getPieceAtPosition(board, 'black', position)
+});
 
 //  legalPosition :: (Board, Position) -> Boolean
 var legalPosition = curry(function(board, position) {
