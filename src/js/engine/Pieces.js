@@ -4,45 +4,42 @@ module.exports = {
     parlett: [
       {
         conditions: ['i', 'o'],
-        moveType: 'default',
-        direction: '>',
-        distance: '2'
+        movement: '1/0',
+        distance: '2',
+        direction: 'forwards'
       },
       {
         conditions: ['o'],
-        moveType: 'default',
-        direction: '>',
-        distance: '1'
+        movement: '1/0',
+        distance: '1',
+        direction: 'forwards'
       },
       {
         conditions: ['c'],
-        moveType: 'default',
-        direction: 'X>',
-        distance: '1'
+        movement: '1/1',
+        distance: '1',
+        direction: 'forwards'
       }
     ],
     points: 1
   },
   'rook': {
     parlett: [{
-      moveType: 'default',
-      direction: '+',
+      movement: '1/0',
       distance: 'n'
     }],
     points: 5
   },
   'bishop': {
     parlett: [{
-      moveType: 'default',
-      direction: 'X',
+      movement: '1/1',
       distance: 'n'
     }],
     points: 3.5
   },
   'knight': {
     parlett: [{
-      moveType: '~',
-      direction: '1/2',
+      movement: '1/2',
       distance: '1'
     }],
     points: 3
@@ -50,13 +47,11 @@ module.exports = {
   'queen': {
     parlett: [
       {
-        moveType: 'default',
-        direction: 'X',
+        movement: '1/1',
         distance: 'n'
       },
       {
-        moveType: 'default',
-        direction: '+',
+        movement: '1/0',
         distance: 'n'
       }
     ],
@@ -65,13 +60,11 @@ module.exports = {
   'king': {
     parlett: [
       {
-        moveType: 'default',
-        direction: 'X',
+        movement: '1/1',
         distance: '1'
       },
       {
-        moveType: 'default',
-        direction: '+',
+        movement: '1/0',
         distance: '1'
       }
     ],
@@ -83,20 +76,19 @@ module.exports = {
     parlett: [
       {
         conditions: ['o'],
-        moveType: 'default',
-        direction: '+',
+        movement: '1/0',
         distance: '1'
       },
       {
         conditions: ['c'],
         moveType: 'gun',
-        direction: '+',
+        movement: '1/0',
         distance: 'n'
       },
       {
         conditions: ['c'],
         moveType: 'gun',
-        direction: 'X',
+        movement: '1/1',
         distance: 'n'
       }
     ]
@@ -104,42 +96,37 @@ module.exports = {
   ////////// Fairies //////////
   'dabbaba': {
     parlett: [{
-      moveType: '~',
-      direction: '2/0',
+      movement: '2/0',
       distance: '1'
     }]
   },
   'alfil': {
     parlett: [{
-      moveType: '~',
-      direction: '2/2',
+      movement: '2/2',
       distance: '1'
     }]
   },
   'wazir': {
     parlett: [{
-      moveType: 'default',
-      direction: '+',
+      movement: '1/0',
       distance: '1'
     }]
   },
   'ferz': {
     parlett: [{
-      moveType: 'default',
-      direction: 'X',
+      movement: '1/1',
       distance: '1'
     }]
   },
   'princess': {
     parlett: [
       {
-        moveType: '~',
-        direction: '1/2',
+        movement: '1/2',
         distance: '1'
       },
       {
         moveType: 'default',
-        direction: 'X',
+        movement: '1/1',
         distance: 'n'
       }
     ]
@@ -147,21 +134,19 @@ module.exports = {
   'empress': {
     parlett: [
       {
-        moveType: '~',
-        direction: '1/2',
+        movement: '1/2',
         distance: '1'
       },
       {
         moveType: 'default',
-        direction: '+',
+        movement: '1/0',
         distance: 'n'
       }
     ]
   },
   'nightrider': {
     parlett: [{
-      moveType: '~',
-      direction: '1/2',
+      movement: '1/2',
       distance: 'n'
     }]
   },
@@ -169,20 +154,20 @@ module.exports = {
     parlett: [
       {
         conditions: ['i', 'o'],
-        moveType: 'default',
-        direction: 'X>',
+        movement: '1/1',
+        direction: 'forwards',
         distance: '2'
       },
       {
         conditions: ['o'],
-        moveType: 'default',
-        direction: 'X>',
+        movement: '1/1',
+        direction: 'forwards',
         distance: '1'
       },
       {
         conditions: ['c'],
-        moveType: 'default',
-        direction: '>',
+        movement: '1/0',
+        direction: 'forwards',
         distance: '1'
       }
     ]
