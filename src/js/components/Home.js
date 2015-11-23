@@ -1,9 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Board = require('./components/Board');
-var Home = require('./components/Home');
-var Types = require('./engine/Types');
-
+var Board = require('./Board');
+var Types = require('../engine/Types');
 var board = Types.Board.of({
   size: 8,
   pieces: [
@@ -85,7 +83,24 @@ var board = Types.Board.of({
   ],
 });
 
-ReactDOM.render(
-  <Home />,
-  document.getElementById('container')
-);
+var Home = React.createClass({
+  getInitialState: function() {
+    return null;
+  },
+  newGame: function() {
+    ReactDOM.render(
+      <Board board={board} />,
+      document.getElementById('container')
+    );
+  },
+  render: function() {
+    return (
+      <div>
+        <div onClick={this.newGame}>New Game</div>
+        <div>How to Play</div>
+      </div>
+    );
+  }
+});
+
+module.exports = Home;
