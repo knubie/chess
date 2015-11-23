@@ -55,7 +55,7 @@ var move = curry(function(distance1, distance2, numMoves, direction, board, piec
         } else {
           return null;
         }
-      }
+      };
       return fn(piece.position);
     }, [
       [add(distance1),          add(distance2)],
