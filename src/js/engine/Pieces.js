@@ -1,4 +1,9 @@
 // TODO: make moveType optional.
+var R = require('ramda');
+for (var k in R) {
+  var topLevel = typeof global === 'undefined' ? window : global;
+  topLevel[k] = R[k];
+}
 module.exports = {
   'pawn': {
     parlett: [
@@ -93,6 +98,49 @@ module.exports = {
       }
     ]
   },
+  'bloodlust': {
+    parlett: [
+      {
+        movement: '1/1',
+        distance: 1
+      },
+      {
+        movement: '1/0',
+        distance: 1
+      }
+    ],
+    points: 5,
+//  onCapture :: Piece -> Piece
+    onCapture: evolve({
+      parlett: map(evolve({ distance: add(1) }))
+    })
+  },
+  'bomber': {
+    parlett: [
+      {
+        conditions: ['o'],
+        movement: '1/1',
+        distance: 1
+      },
+      {
+        conditions: ['o'],
+        movement: '1/0',
+        distance: 1
+      }
+    ],
+    points: 5,
+//  onCaptureBoard :: Board -> Board
+    onCaptureBoard: function(board) {
+      return evolve({
+        pieces: reject(
+          compose(
+            flip(contains( append(this.position, getMoves(board, this)) )),
+            prop('position')
+          )
+        )
+      }, board);
+    }
+  },
   ////////// Fairies //////////
   'dabbaba': {
     parlett: [{
@@ -118,7 +166,7 @@ module.exports = {
       distance: '1'
     }]
   },
-  'princess': {
+  'archbishop': {
     parlett: [
       {
         movement: '1/2',

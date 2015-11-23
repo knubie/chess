@@ -60,8 +60,10 @@ var Piece = function(opts) {
     }
   };
 
-  this.parlett = pieces[opts.name].parlett;
+  this.parlett = this.parlett || pieces[opts.name].parlett;
   this.moves = this.moves || 0;
+  this.captures = this.captures || 0;
+  this.onCapture = pieces[opts.name].onCapture || identity;
 }
 
 Piece.of = function(x) { return new Piece(x); };

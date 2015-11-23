@@ -20,7 +20,10 @@ var Piece = React.createClass({
         rook: '&#9820',
         bishop: '&#9821',
         knight: '&#9822',
-        pawn: '&#9823'
+        pawn: '&#9823',
+        'nightrider': 'O',
+        'cannon': 'I',
+        'bloodlust': 'B'
       }
     }
     var className = "piece" +
