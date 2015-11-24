@@ -1,10 +1,36 @@
 var React = require('react');
+var PropTypes = React.PropTypes;
+var DragSource = require('react-dnd').DragSource;
+
+var itemTypes = {
+  KNIGHT: 'knight'
+};
+
+var knightSource = {
+  beginDrag: function (props) {
+    props.onDrag(props.piece);
+    return {piece: props.piece};
+  }
+};
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  }
+}
 
 var Piece = React.createClass({
+  propTypes: {
+    connectDragSource: PropTypes.func.isRequired,
+    isDragging: PropTypes.bool.isRequired
+  },
   onClick: function() {
     this.props.onClick(this.props.piece);
   },
   render: function() {
+    var connectDragSource = this.props.connectDragSource;
+    var isDragging = this.props.isDragging;
     var pieceLookup = {
       white: {
         king: '&#9812',
@@ -12,7 +38,9 @@ var Piece = React.createClass({
         rook: '&#9814',
         bishop: '&#9815',
         knight: '&#9816',
-        pawn: '&#9817'
+        pawn: '&#9817',
+        'nightrider': 'O',
+        'cannon': 'I'
       },
       black: {
         king: '&#9818',
@@ -26,11 +54,9 @@ var Piece = React.createClass({
         'bloodlust': 'B'
       }
     }
-    var className = "piece" +
-                    " x-" + this.props.piece.position.x +
-                    " y-" + this.props.piece.position.y;
-    return (
-      <div className={className} onClick={this.onClick}>
+    var className = "piece";
+    return connectDragSource(
+      <div className={className} onClick={this.onClick} style={{opacity: isDragging ? 0 : 1}}>
         <span
           dangerouslySetInnerHTML={{
             __html: pieceLookup[this.props.piece.color][this.props.piece.name]
@@ -41,5 +67,5 @@ var Piece = React.createClass({
   }
 });
 
-module.exports = Piece;
-
+module.exports = DragSource(itemTypes.KNIGHT, knightSource, collect)(Piece);
+//module.exports = Piece;

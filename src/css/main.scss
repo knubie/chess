@@ -47,7 +47,8 @@ $move-square-index: 2;
   .move-square {
     background-color: rgba(0,120,255,0.1);
     cursor: pointer;
-    @include grid-unit;
+    width: 100%;
+    height: 100%;
     z-index: $move-square-index;
   }
   .piece {

@@ -167,7 +167,7 @@ var movePiece = curry(function(board, startingPosition, targetPosition) {
   }
 
   var onCapture = capturedPiece && path([piece.name, 'onCapture'], pieceCallbacks) ||
-                  function(piece, board) { console.log('foo'); return board; };
+                  function(piece, board) { console.log('no piece callbacks'); return board; };
 
   if (contains(targetPosition, getMoves(board, piece))) {
     var newPiece = Piece.of(evolve({
@@ -200,4 +200,4 @@ var addPiece = curry(function(pieces, piece) {
   return append(piece, reject(propEq('position', piece.position), pieces));
 });
 
-module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures, addPiece: addPiece };
+module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures, addPiece: addPiece, getPieceAtPosition: getPieceAtPosition };
