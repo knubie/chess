@@ -1,6 +1,7 @@
 var R = require('ramda');
 var Errors = require('./Errors');
 var pieces = require('./Pieces');
+var Colors = require('./Constants').Colors;
 for (var k in R) {
   var topLevel = typeof global === 'undefined' ? window : global;
   topLevel[k] = R[k];
@@ -28,11 +29,12 @@ Game.of = function(x) { return new Game(x); };
 var Board = function(opts) {
   if ( typeof opts !== 'object'
     || typeof opts.size !== 'number'
-    || opts.pieces == null) {
+    || opts.pieces == null
+    || !Array.isArray(opts.pieces)) {
     throw new Errors.TypeClassError('Invalid Board options.');
   }
   if (any(compose(not, is(Piece)), opts.pieces)) {
-    throw new Errors.TypeClassError('Invalid type.');
+    throw new Errors.TypeClassError('Invalid type. Some item in Board.pieces is not a Piece.');
   }
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
