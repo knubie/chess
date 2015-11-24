@@ -1,5 +1,6 @@
 var R        = require('ramda');
 var check    = require('./lib/type-checker').checkAll;
+var Game     = require('./Types').Game;
 var Board    = require('./Types').Board;
 var Piece    = require('./Types').Piece;
 var Position = require('./Types').Position;
@@ -155,6 +156,20 @@ var pieceCallbacks = {
   }
 };
 
+//  makePly :: (Game, Position, Position) -> Game
+var makePly = curry(function(game, startingPosition, targetPosition) {
+  check(arguments, [Game, Position, Position]);
+  var piece = getAnyPieceAtPosition(game.board, startingPosition);
+  if (equals(startingPosition, targetPosition) || not(equals(piece.color, game.turn))) {
+    // TODO: Add message.
+    return game;
+  } else {
+    return Game.of(evolve({
+      board: movePiece(__, startingPosition, targetPosition),
+      turn: function(turn) { return turn === 'white' ? 'black' : 'white'; }
+    }, game));
+  }
+});
 //  movePiece :: (Board, Position, Position) -> Maybe Board
 var movePiece = curry(function(board, startingPosition, targetPosition) {
   check(arguments, [Board, Position, Position]);
@@ -167,7 +182,7 @@ var movePiece = curry(function(board, startingPosition, targetPosition) {
   }
 
   var onCapture = capturedPiece && path([piece.name, 'onCapture'], pieceCallbacks) ||
-                  function(piece, board) { console.log('no piece callbacks'); return board; };
+                  function(piece, board) { return board; };
 
   if (contains(targetPosition, getMoves(board, piece))) {
     var newPiece = Piece.of(evolve({
@@ -183,6 +198,7 @@ var movePiece = curry(function(board, startingPosition, targetPosition) {
     }, board));
     return onCapture(newPiece, newBoard);
   } else {
+    // TODO: return message
     return null;
   }
 });
@@ -200,4 +216,4 @@ var addPiece = curry(function(pieces, piece) {
   return append(piece, reject(propEq('position', piece.position), pieces));
 });
 
-module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures, addPiece: addPiece, getPieceAtPosition: getPieceAtPosition };
+module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures, addPiece: addPiece, getPieceAtPosition: getPieceAtPosition, makePly: makePly };

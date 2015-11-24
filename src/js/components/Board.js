@@ -12,7 +12,7 @@ var HTML5Backend = require('react-dnd-html5-backend');
 var Board = React.createClass({
   getInitialState: function() {
     return {
-      board: this.props.board,
+      game: this.props.game,
       possibleMoves: [ ],
       selectedPiece: null
     }
@@ -20,7 +20,7 @@ var Board = React.createClass({
   clickPiece: function(piece) {
     console.log('click piece');
     this.setState({
-      possibleMoves: Chess.getMoves(this.state.board, piece),
+      possibleMoves: Chess.getMoves(this.state.game.board, piece),
       selectedPiece: piece
     });
   },
@@ -30,34 +30,22 @@ var Board = React.createClass({
     if (this.state.selectedPiece) {
       this.setState({
         possibleMoves: [],
-        board: Chess.movePiece(this.state.board,
+        game: Chess.makePly(this.state.game,
                                this.state.selectedPiece.position,
-                               position) || this.state.board,
+                               position),
         selectedPiece: null
       });
     }
   },
   canDrop: function(x, y) {
   },
-  clickPossibleMove: function(e) {
-    var position = Types.Position.of({
-      x: parseInt($(e.target).attr('class').match(/x-(\d) y-(\d)/)[1]),
-      y: parseInt($(e.target).attr('class').match(/x-(\d) y-(\d)/)[2])
-    });
-    this.setState({
-      possibleMoves: [],
-      board: Chess.movePiece(this.state.board,
-                             this.state.selectedPiece.position,
-                             position)
-    });
-  },
   render: function() {
     var _this = this;
     var className = "chess-board " +
-                    "size-" + this.state.board.size;
+                    "size-" + this.state.game.board.size;
 
     var squares = R.flatten(R.map(function(y) {
-      var y = _this.state.board.size - y - 1;
+      var y = _this.state.game.board.size - y - 1;
       return (
         <div className="row">
           {R.map(function(x) {
@@ -81,16 +69,16 @@ var Board = React.createClass({
                       x={x} y={y}>
                 {returnPiece(R.find(function(piece) {
                   return (x === piece.position.x && y === piece.position.y);
-                }, _this.state.board.pieces))}
+                }, _this.state.game.board.pieces))}
                 {returnPossibleMoves(R.find(function(pos) {
                   return (x === pos.x && y === pos.y);
                 }, _this.state.possibleMoves))}
               </Square>
             );
-          }, R.range(0, _this.state.board.size))}
+          }, R.range(0, _this.state.game.board.size))}
         </div>
       );
-    }, R.range(0, this.state.board.size)));
+    }, R.range(0, this.state.game.board.size)));
 
     var possibleMovesNodes = R.map(function(pos) {
       var className = "move-square x-" + pos.x + " y-" + pos.y;
@@ -100,8 +88,12 @@ var Board = React.createClass({
     }, this.state.possibleMoves);
 
     return (
-      <div className={className}>
-        {squares}
+      <div>
+        <span>turn: </span>
+        <span className='turn'>{this.state.game.turn}</span>
+        <div className={className}>
+          {squares}
+        </div>
       </div>
     );
   }

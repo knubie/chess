@@ -82,6 +82,10 @@ var board = Types.Board.of({
     }),
   ],
 });
+var game = Types.Game.of({
+  turn: 'white',
+  board: board
+});
 
 var Home = React.createClass({
   getInitialState: function() {
@@ -89,7 +93,7 @@ var Home = React.createClass({
   },
   newGame: function() {
     ReactDOM.render(
-      <Board board={board} />,
+      <Board game={game} board={board} />,
       document.getElementById('container')
     );
   },

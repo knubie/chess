@@ -6,6 +6,22 @@ var Position = require('../src/js/engine/Types').Position;
 var Chess    = require('../src/js/engine/Main.js')
 for (k in R) { global[k] = R[k]; }
 
+var board = new Board({
+  size: 8,
+  pieces: [
+    new Piece({
+      name: 'rook',
+      color: 'white',
+      position: new Position({x: 4, y: 4})
+    })
+  ],
+});
+
+var game = new Game({
+  turn: 'white',
+  board: board
+});
+
 // :: ([position], [position], Number) -> Boolean
 var compare = function(arr1, arr2, i) {
   var i = i || 0;
@@ -36,7 +52,7 @@ describe('Game', function() {
           })
         ]
       })
-    })
+    });
   });
   it('Adding a piece in a position that\'s already occupied should replace that piece', function() {
     var pieces = [
@@ -80,5 +96,62 @@ describe('Game', function() {
         position: new Position({x: 4, y: 5})
       }),
     ]
+  });
+  it('Should change turns when a user makes a ply', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'white',
+            position: Position.of({x: 4, y: 4})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly(game,
+                                Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 5}));
+    expect(equals(newGame.turn, 'black')).toBe(true);
+  });
+  it('Should not change turns when a user moves a piece to its original position', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'white',
+            position: Position.of({x: 4, y: 4})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly(game,
+                                Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 4}));
+    expect(equals(newGame.turn, 'white')).toBe(true);
+  });
+  it('Should only move a piece if it\'s that piece\'s turn', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'black',
+            position: Position.of({x: 4, y: 4})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly(game,
+                                Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 5}));
+    expect(equals(game, newGame)).toBe(true);
   });
 });
