@@ -26,8 +26,9 @@ var Square = React.createClass({
   render: function() {
     var connectDropTarget = this.props.connectDropTarget;
     var isOver = this.props.isOver;
+    var className = 'square ' + this.props.color;
     return connectDropTarget(
-      <div className="square" onClick={this.onClick}>
+      <div className={className} onClick={this.onClick}>
         {this.props.children}
         {isOver && <div className='move-square'></div>}
       </div>

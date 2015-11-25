@@ -7,28 +7,25 @@ $move-square-index: 2;
   border: 1px solid #999;
   position: relative;
   user-select: none;
+  display: flex;
+  flex-wrap: wrap;
   @for $size from 1 through 12 {
     &.size-#{$size} {
+      .square {
+        width: percentage(1 / $size);
+        height: percentage(1 / $size);
+        &.black {
+          background-color: #eee;
+        }
+      }
       width: $size * $unit;
       height: $size * $unit;
     }
   }
-  .row {
+  &.builder {
+    height: 2 * $unit;
     .square {
-      width: $unit;
-      height: $unit;
-      float: left;
-      z-index: $square-index;
-    }
-    &:nth-of-type(odd) {
-      .square:nth-of-type(even) {
-        background-color: #eee;
-      }
-    }
-    &:nth-of-type(even) {
-      .square:nth-of-type(odd) {
-        background-color: #eee;
-      }
+      height: 50%;
     }
   }
   @mixin grid-unit {
