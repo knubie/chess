@@ -8,7 +8,9 @@ var itemTypes = {
 
 var pieceSource = {
   beginDrag: function (props) {
-    props.onDrag(props.piece);
+    if (typeof props.onDrag === 'function') {
+      props.onDrag(props.piece);
+    }
     return {piece: props.piece};
   }
 };
