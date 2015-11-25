@@ -96,7 +96,8 @@ module.exports = {
         movement: '1/1',
         distance: 'n'
       }
-    ]
+    ],
+    points: 6
   },
   'bloodlust': {
     parlett: [
@@ -110,7 +111,7 @@ module.exports = {
       }
     ],
     points: 5,
-//  onCapture :: Piece -> Piece
+    // onCapture :: Piece -> Piece
     onCapture: evolve({
       parlett: map(evolve({ distance: add(1) }))
     })
@@ -129,7 +130,7 @@ module.exports = {
       }
     ],
     points: 5,
-//  onCaptureBoard :: Board -> Board
+    // onCaptureBoard :: Board -> Board
     onCaptureBoard: function(board) {
       return evolve({
         pieces: reject(
@@ -146,25 +147,29 @@ module.exports = {
     parlett: [{
       movement: '2/0',
       distance: '1'
-    }]
+    }],
+    points: 2
   },
   'alfil': {
     parlett: [{
       movement: '2/2',
       distance: '1'
-    }]
+    }],
+    points: 2
   },
   'wazir': {
     parlett: [{
       movement: '1/0',
       distance: '1'
-    }]
+    }],
+    points: 2
   },
   'ferz': {
     parlett: [{
       movement: '1/1',
       distance: '1'
-    }]
+    }],
+    points: 2
   },
   'archbishop': {
     parlett: [
@@ -177,7 +182,8 @@ module.exports = {
         movement: '1/1',
         distance: 'n'
       }
-    ]
+    ],
+    points: 7
   },
   'empress': {
     parlett: [
@@ -190,13 +196,15 @@ module.exports = {
         movement: '1/0',
         distance: 'n'
       }
-    ]
+    ],
+    points: 8
   },
   'nightrider': {
     parlett: [{
       movement: '1/2',
       distance: 'n'
-    }]
+    }],
+    points: 9
   },
   'berolina': {
     parlett: [
@@ -218,7 +226,8 @@ module.exports = {
         direction: 'forwards',
         distance: '1'
       }
-    ]
+    ],
+    points: 1
   },
 };
 
