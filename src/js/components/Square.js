@@ -5,9 +5,10 @@ var itemTypes = {
   KNIGHT: 'knight'
 };
 var squareTarget = {
-  drop: function (props) {
+  drop: function (props, monitor) {
     console.log('drop');
-    props.onDrop(props.x, props.y);
+    console.log(monitor.getItem());
+    props.onDrop(props.x, props.y, monitor.getItem().piece);
   }
 };
 // Implement moveKnight

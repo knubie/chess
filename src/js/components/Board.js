@@ -24,10 +24,10 @@ var Board = React.createClass({
       selectedPiece: piece
     });
   },
-  clickSquare: function(x, y) {
     console.log('click square');
+  clickSquare: function(x, y, piece) {
     var position = Types.Position.of({ x: x, y: y });
-    if (this.state.selectedPiece) {
+    if (this.state.selectedPiece) { // TODO: or piece
       this.setState({
         possibleMoves: [],
         game: Chess.makePly(this.state.game,
