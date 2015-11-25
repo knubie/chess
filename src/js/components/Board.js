@@ -18,13 +18,11 @@ var Board = React.createClass({
     }
   },
   clickPiece: function(piece) {
-    console.log('click piece');
     this.setState({
       possibleMoves: Chess.getMoves(this.state.game.board, piece),
       selectedPiece: piece
     });
   },
-    console.log('click square');
   clickSquare: function(x, y, piece) {
     var position = Types.Position.of({ x: x, y: y });
     if (this.state.selectedPiece) { // TODO: or piece
@@ -46,38 +44,36 @@ var Board = React.createClass({
 
     var squares = R.flatten(R.map(function(y) {
       var y = _this.state.game.board.size - y - 1;
-      return (
-        <div className="row">
-          {R.map(function(x) {
-            var returnPiece = function(piece) {
-              return piece == null ?
-                              null :
-                              <Piece piece={piece}
-                                     onDrag={_this.clickPiece}
-                                     onClick={_this.clickPiece}>
-                              </Piece>;
-            }
-            var returnPossibleMoves = function(pos) {
-              return pos == null ?
-                            null :
-                            <div className='move-square'></div>
-            }
-            return (
-              <Square onClick={_this.clickSquare.bind(_this, x, y)}
-                      onDrop={_this.clickSquare.bind(_this, x, y)}
-                      canDrop={_this.canDrop.bind(_this, x, y)}
-                      x={x} y={y}>
-                {returnPiece(R.find(function(piece) {
-                  return (x === piece.position.x && y === piece.position.y);
-                }, _this.state.game.board.pieces))}
-                {returnPossibleMoves(R.find(function(pos) {
-                  return (x === pos.x && y === pos.y);
-                }, _this.state.possibleMoves))}
-              </Square>
-            );
-          }, R.range(0, _this.state.game.board.size))}
-        </div>
-      );
+      return R.map(function(x) {
+        var returnPiece = function(piece) {
+          return piece == null ?
+                          null :
+                          <Piece piece={piece}
+                                 onDrag={_this.clickPiece}
+                                 onClick={_this.clickPiece}>
+                          </Piece>;
+        }
+        var returnPossibleMove = function(pos) {
+          return pos == null ?
+                        null :
+                        <div className='move-square'></div>
+        }
+        var color = (x + y) % 2 === 1 ? 'black' : 'white'
+        return (
+          <Square onClick={_this.clickSquare.bind(_this, x, y)}
+                  onDrop={_this.clickSquare.bind(_this, x, y)}
+                  canDrop={_this.canDrop.bind(_this, x, y)}
+                  color={color}
+                  x={x} y={y}>
+            {returnPiece(R.find(R.compose(
+              R.whereEq({x:x,y:y}),
+              R.prop('position')
+            ), _this.state.game.board.pieces))}
+            {returnPossibleMove(R.find(R.whereEq({x:x,y:y})
+            , _this.state.possibleMoves))}
+          </Square>
+        );
+      }, R.range(0, _this.state.game.board.size));
     }, R.range(0, this.state.game.board.size)));
 
     var possibleMovesNodes = R.map(function(pos) {

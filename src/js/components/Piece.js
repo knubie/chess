@@ -3,10 +3,10 @@ var PropTypes = React.PropTypes;
 var DragSource = require('react-dnd').DragSource;
 
 var itemTypes = {
-  KNIGHT: 'knight'
+  PIECE: 'piece'
 };
 
-var knightSource = {
+var pieceSource = {
   beginDrag: function (props) {
     props.onDrag(props.piece);
     return {piece: props.piece};
@@ -67,5 +67,5 @@ var Piece = React.createClass({
   }
 });
 
-module.exports = DragSource(itemTypes.KNIGHT, knightSource, collect)(Piece);
+module.exports = DragSource(itemTypes.PIECE, pieceSource, collect)(Piece);
 //module.exports = Piece;

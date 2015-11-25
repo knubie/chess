@@ -2,7 +2,7 @@ var React = require('react');
 var DropTarget = require('react-dnd').DropTarget;
 
 var itemTypes = {
-  KNIGHT: 'knight'
+  PIECE: 'piece'
 };
 var squareTarget = {
   drop: function (props, monitor) {
@@ -35,4 +35,4 @@ var Square = React.createClass({
   }
 });
 
-module.exports = DropTarget(itemTypes.KNIGHT, squareTarget, collect)(Square);
+module.exports = DropTarget(itemTypes.PIECE, squareTarget, collect)(Square);
