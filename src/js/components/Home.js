@@ -1,6 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Board = require('./Board');
+var Builder = require('./Builder');
 var Types = require('../engine/Types');
 var board = Types.Board.of({
   size: 8,
