@@ -42,7 +42,15 @@ var Piece = React.createClass({
         knight: '&#9816',
         pawn: '&#9817',
         'nightrider': 'O',
-        'cannon': 'I'
+        'cannon': 'I',
+        'bloodlust': 'B',
+        'bomber': 'b',
+        'dabbaba': 'D',
+        'alfil': 'A',
+        'wazir': 'W',
+        'ferz': 'F',
+        'archbishop': 'a',
+        'empress': 'E'
       },
       black: {
         king: '&#9818',
@@ -58,7 +66,7 @@ var Piece = React.createClass({
     }
     var className = "piece";
     return connectDragSource(
-      <div className={className} onClick={this.onClick} style={{opacity: isDragging ? 0 : 1}}>
+      <div className={className} onClick={this.onClick} style={{display: 'inline-block', opacity: isDragging ? 0 : 1}}>
         <span
           dangerouslySetInnerHTML={{
             __html: pieceLookup[this.props.piece.color][this.props.piece.name]
