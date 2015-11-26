@@ -37,8 +37,7 @@ module.exports = {
         t = checkType(arg, typeclass);
       }
       if (!t) {
-        // TODO: log more details about the expected type and actual type.
-        throw new Errors.TypeClassError('Invalid type.');
+        throw new Errors.TypeClassError('Invalid type. Expected ' + typeclass.className + ', but got ' + arg.constructor.className + ' instead.');
       }
     }, zip(args, types));
   })

@@ -24,6 +24,7 @@ var Game = function(opts) {
   };
 }
 Game.of = function(x) { return new Game(x); };
+Game.className = 'Game';
 
 // Board { size :: Number, pieces :: [Piece] }
 var Board = function(opts) {
@@ -47,6 +48,7 @@ Board.of = function(x) { return new Board(x); };
 //Board.prototype.map = function(f){
   //return Board.of(f(this))
 //}
+Board.className = 'Board';
 
 // Piece { name :: String, color :: String, position :: Position }
 var Piece = function(opts) {
@@ -72,6 +74,7 @@ Piece.of = function(x) { return new Piece(x); };
 //Piece.prototype.map = function(f){
   //return Piece.of(f(this))
 //}
+Piece.className = 'Piece';
 
 // Position { x :: Number, y :: Number }
 var Position = function(opts) {
@@ -91,5 +94,6 @@ Position.of = function(x) { return new Position(x); };
 //Position.prototype.map = function(f){
   //return Position.of(f(this))
 //}
+Position.className = 'Position';
 
 module.exports = { Game: Game, Board: Board, Piece: Piece, Position: Position };
