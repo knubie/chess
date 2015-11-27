@@ -94,7 +94,7 @@ var Home = React.createClass({
   },
   newGame: function() {
     ReactDOM.render(
-      <Board game={game} board={board} />,
+      <Builder game={game} board={board} />,
       document.getElementById('container')
     );
   },

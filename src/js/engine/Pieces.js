@@ -227,7 +227,7 @@ module.exports = {
         distance: '1'
       }
     ],
-    points: 1
+    points: 2
   },
 };
 
