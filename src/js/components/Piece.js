@@ -50,7 +50,8 @@ var Piece = React.createClass({
         'wazir': 'W',
         'ferz': 'F',
         'archbishop': 'a',
-        'empress': 'E'
+        'empress': 'E',
+        'berolina': 'L'
       },
       black: {
         king: '&#9818',
