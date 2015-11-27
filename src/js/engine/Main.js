@@ -20,6 +20,7 @@ var between = curry(function(start, end) {
 
 //  move :: (Number, Number, Number, Board, Piece) -> [Position]
 var move = curry(function(distance1, distance2, numMoves, direction, board, piece) {
+  check(arguments, [Number, Number, Number, Board, Piece]);
   var oppositeColor = piece.color === 'white' ? 'black' : 'white';
 
   // TODO: Add support for x(n/n).
@@ -84,6 +85,7 @@ var getPieceAtPosition = curry(function(board, color, position) {
 
 //  getAnyPieceAtPosition :: (Board, Position) -> Maybe Piece
 var getAnyPieceAtPosition = curry(function(board, position) {
+  check(arguments, [Board, Position]);
   return getPieceAtPosition(board, 'white', position) ||
          getPieceAtPosition(board, 'black', position);
 });
@@ -205,6 +207,7 @@ var movePiece = curry(function(board, startingPosition, targetPosition) {
 
 //  isGameOver :: (Board, String) -> Maybe Boolean
 var isGameOver = curry(function(board, color) {
+  check(arguments, [Board, String]);
   return not(any(where({
                    color: equals(color),
                    royal: equals(true)
@@ -213,6 +216,7 @@ var isGameOver = curry(function(board, color) {
 
 //  addPiece :: ([Piece], Piece) -> [Piece]
 var addPiece = curry(function(pieces, piece) {
+  check(arguments, [[Piece], Piece]);
   return append(piece, reject(propEq('position', piece.position), pieces));
 });
 

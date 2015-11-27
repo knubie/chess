@@ -1,4 +1,5 @@
 var R = require('ramda');
+var check    = require('./lib/type-checker').checkAll;
 var Errors = require('./Errors');
 var pieces = require('./Pieces');
 var Colors = require('./Constants').Colors;
@@ -12,11 +13,7 @@ for (var k in R) {
 
 //  Game { turn :: String, board :: Board }
 var Game = function(opts) {
-  if ( typeof opts !== 'object'
-    || typeof opts.turn !== 'string'
-    || not(is(Board, opts.board))) {
-    throw new Errors.TypeClassError('Invalid Game options.');
-  }
+  check([opts, opts.turn, opts.board], [Object, String, Board]);
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
       this[k] = opts[k];
@@ -28,15 +25,7 @@ Game.className = 'Game';
 
 // Board { size :: Number, pieces :: [Piece] }
 var Board = function(opts) {
-  if ( typeof opts !== 'object'
-    || typeof opts.size !== 'number'
-    || opts.pieces == null
-    || !Array.isArray(opts.pieces)) {
-    throw new Errors.TypeClassError('Invalid Board options.');
-  }
-  if (any(compose(not, is(Piece)), opts.pieces)) {
-    throw new Errors.TypeClassError('Invalid type. Some item in Board.pieces is not a Piece.');
-  }
+  check([opts, opts.size, opts.pieces], [Object, Number, [Piece]]);
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
       this[k] = opts[k];
@@ -52,12 +41,8 @@ Board.className = 'Board';
 
 // Piece { name :: String, color :: String, position :: Position }
 var Piece = function(opts) {
-  if (typeof opts != 'object'
-    || typeof opts.name != 'string'
-    || typeof opts.color != 'string'
-    || not(is(Position, opts.position))) {
-    throw new Errors.TypeClassError('Invalid Piece options.');
-  }
+  check([opts,   opts.name, opts.color, opts.position],
+        [Object, String,    String,     Position]);
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
       this[k] = opts[k];
@@ -78,6 +63,7 @@ Piece.className = 'Piece';
 
 // Position { x :: Number, y :: Number }
 var Position = function(opts) {
+  check([opts, opts.x, opts.y], [Object, Number, Number]);
   if (typeof opts != 'object'
     || typeof opts.x != 'number'
     || typeof opts.y != 'number') {
