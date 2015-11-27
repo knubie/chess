@@ -14,9 +14,6 @@ $move-square-index: 2;
       .square {
         width: percentage(1 / $size);
         height: percentage(1 / $size);
-        &.black {
-          background-color: #eee;
-        }
       }
       width: $size * $unit;
       height: $size * $unit;
@@ -41,11 +38,21 @@ $move-square-index: 2;
       }
     }
   }
+  .square {
+    position: relative;
+    background-color: #fff;
+    &.black {
+      background-color: #eee;
+    }
+  }
   .move-square {
     background-color: rgba(0,120,255,0.1);
     cursor: pointer;
     width: 100%;
     height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
     z-index: $move-square-index;
   }
   .piece {
