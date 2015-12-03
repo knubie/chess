@@ -128,14 +128,19 @@ var getCaptures = curry(function(board, piece) {
 
 var pieceCallbacks = {
   bloodlust: {
-//  onCapture :: (Piece, Board) -> Board
-    onCapture: function(piece, board) {
+    // onCapture :: (Piece, Piece, Board) -> Board
+    onCapture: function(piece, capturedPiece, board) {
+      check(arguments, [Piece, Piece, Board]);
       return Board.of(evolve({
         pieces: adjust(
                   compose(
                     Piece.of,
                     evolve({
-                      parlett: map(evolve({ distance: add(1) })) })),
+                      // TODO: Make this less ugly.
+                      parlett: map(evolve({ distance: compose(
+                                                        add(''),
+                                                        add(1),
+                                                        parseInt) })) })),
                   indexOf(piece, board.pieces))
       }, board));
     }
@@ -147,14 +152,13 @@ var pieceCallbacks = {
         pieces: reject(
                   comspose(
                     any(__, surroundingPieces),
-                    equals
-                  )
-                )
+                    equals))
       }, board));
     },
 
-//  onCapture :: (Piece, Board) -> Board
-    onCapture: function(piece, board) {
+    // onCapture :: (Piece, Piece, Board) -> Board
+    onCapture: function(piece, capturedPiece, board) {
+      check(arguments, [Piece, Piece, Board]);
       return board;
     }
   }
@@ -186,7 +190,7 @@ var movePiece = curry(function(board, startingPosition, targetPosition) {
   }
 
   var onCapture = capturedPiece && path([piece.name, 'onCapture'], pieceCallbacks) ||
-                  function(piece, board) { return board; };
+                  function(piece, capturedPiece, board) { return board; };
 
   if (contains(targetPosition, getMoves(board, piece))) {
     var newPiece = Piece.of(evolve({
@@ -200,7 +204,7 @@ var movePiece = curry(function(board, startingPosition, targetPosition) {
                   always(newPiece),
                   indexOf(piece, board.pieces)))
     }, board));
-    return onCapture(newPiece, newBoard);
+    return onCapture(newPiece, capturedPiece, newBoard);
   } else {
     // TODO: return message
     return null;
