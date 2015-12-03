@@ -73,11 +73,12 @@ describe('Game', function() {
       }),
     ]
     var actualPieces = Chess.addPiece(
+      pieces,
       Piece.of({
         name: 'bishop',
         color: 'white',
         position: new Position({x: 3, y: 4})
-      }), pieces
+      })
     )
     var expectedPieces = [
       Piece.of({
