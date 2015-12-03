@@ -1,4 +1,5 @@
 var React = require('react');
+var Types = require('../engine/Types');
 var PropTypes = React.PropTypes;
 var DragSource = require('react-dnd').DragSource;
 
@@ -25,7 +26,10 @@ function collect(connect, monitor) {
 var Piece = React.createClass({
   propTypes: {
     connectDragSource: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired
+    isDragging: PropTypes.bool.isRequired,
+    onDrag: PropTypes.func,
+    onClick: PropTypes.func,
+    piece: PropTypes.instanceOf(Types.Piece)
   },
   onClick: function() {
     this.props.onClick(this.props.piece);
