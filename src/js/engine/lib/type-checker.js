@@ -5,20 +5,6 @@ for (var k in R) {
   topLevel[k] = R[k];
 }
 
-var checkType = curry(function(arg, x) {
-  var tt;
-  if (x === String) {
-    tt = equals(type(arg), 'String');
-  } else if (x === Number) {
-    tt = equals(type(arg), 'Number');
-  } else if (x === Boolean) {
-    tt = equals(type(arg), 'Boolean');
-  } else {
-    tt = is(x, arg);
-  }
-  return tt;
-});
-
 module.exports = {
   check: curry(function(klass, obj) {
     if (!is(klass, obj)) {
@@ -32,12 +18,26 @@ module.exports = {
       var typeclass = pair[1];
       var t;
       if (equals(type(typeclass), 'Array')) {
-        t = any(checkType(arg), typeclass)
+        t = all(is(typeclass[0]), arg);
       } else {
-        t = checkType(arg, typeclass);
+        t = is(typeclass, arg);
       }
       if (!t) {
-        throw new Errors.TypeClassError('Invalid type. Expected ' + typeclass.className + ', but got ' + arg.constructor.className + ' instead.');
+        var typeclassName = '';
+        var argName = '';
+        if (is(Array, typeclass)) {
+          typeclassName = '[' + typeclass[0].name + ']';
+        } else {
+          typeclassName = typeclass.name;
+        }
+        if (arg == null) {
+          argName = type(arg);
+        } else {
+          argName = arg.constructor.name;
+        }
+        console.log(typeclassName);
+        console.log(pair);
+        throw new Errors.TypeClassError('Invalid type. Expected ' + typeclassName + ', but got ' + argName + ' instead.');
       }
     }, zip(args, types));
   })
