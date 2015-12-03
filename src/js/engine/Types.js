@@ -49,6 +49,13 @@ var Piece = function(opts) {
     }
   };
 
+  if (pieces[opts.name].points == null) {
+    throw new Errors.TypeClassError(opts.name + ' Piece needs a point value.');
+  }
+  if (pieces[opts.name].parlett == null) {
+    throw new Errors.TypeClassError(opts.name + ' Piece needs a parlett value.');
+  }
+
   this.parlett = this.parlett || pieces[opts.name].parlett;
   this.moves = this.moves || 0;
   this.captures = this.captures || 0;
