@@ -22,6 +22,7 @@ var between = curry(function(start, end) {
 var move = curry(function(distance1, distance2, numMoves, direction, board, piece) {
   check(arguments, [Number, Number, String, String, Board, Piece]);
   var oppositeColor = piece.color === 'white' ? 'black' : 'white';
+  var numMoves = numMoves === 'n' ? 'n' : parseInt(numMoves);
 
   // TODO: Add support for x(n/n).
 
@@ -106,7 +107,8 @@ var getMoves = curry(function(board, piece) {
 
   return uniq(flatten(map(function(p) {
     var d = map(parseInt, p.movement.match(/(\d)\/(\d)/));
-    var results = move(d[1], d[2], p.distance, p.direction, board, piece);
+    var direction = p.direction || 'any';
+    var results = move(d[1], d[2], p.distance, direction, board, piece);
     if (contains('c', or(p.conditions, []))) {
       return filter(getPieceAtPosition(board, oppositeColor), results);
     } else if (contains('o', or(p.conditions, []))) {

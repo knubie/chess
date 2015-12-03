@@ -98,16 +98,17 @@ module.exports = {
     parlett: [
       {
         movement: '1/1',
-        distance: 1
+        distance: '1'
       },
       {
         movement: '1/0',
-        distance: 1
+        distance: '1'
       }
     ],
     points: 5,
     // onCapture :: Piece -> Piece
     onCapture: evolve({
+      // FIXME: distance is a string.
       parlett: map(evolve({ distance: add(1) }))
     })
   },
@@ -116,12 +117,12 @@ module.exports = {
       {
         conditions: ['o'],
         movement: '1/1',
-        distance: 1
+        distance: '1'
       },
       {
         conditions: ['o'],
         movement: '1/0',
-        distance: 1
+        distance: '1'
       }
     ],
     points: 5,
