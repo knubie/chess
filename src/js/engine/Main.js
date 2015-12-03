@@ -18,9 +18,9 @@ var between = curry(function(start, end) {
   return start < end ? range(start + 1, end) : range(end + 1, start);
 });
 
-//  move :: (Number, Number, Number, Board, Piece) -> [Position]
+//  move :: (Number, Number, String, String, Board, Piece) -> [Position]
 var move = curry(function(distance1, distance2, numMoves, direction, board, piece) {
-  check(arguments, [Number, Number, Number, Board, Piece]);
+  check(arguments, [Number, Number, String, String, Board, Piece]);
   var oppositeColor = piece.color === 'white' ? 'black' : 'white';
 
   // TODO: Add support for x(n/n).
