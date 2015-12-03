@@ -88,16 +88,11 @@ module.exports = {
         conditions: ['c'],
         moveType: 'gun',
         movement: '1/0',
-        distance: 'n'
-      },
-      {
-        conditions: ['c'],
-        moveType: 'gun',
-        movement: '1/1',
+        direction: 'forwards',
         distance: 'n'
       }
     ],
-    points: 6
+    points: 12
   },
   'bloodlust': {
     parlett: [

@@ -499,8 +499,8 @@ describe('Movement', function() {
       {x: 5, y: 4},
       {x: 4, y: 5},
       //{x: 3, y: 4}, // White rook
-      {x: 4, y: 6}, // Black rook
-      {x: 4, y: 0} // Black rook
+      {x: 4, y: 6}    // Black rook
+      //{x: 4, y: 0}  // Black rook
     ];
 
     expect(compare(expectedMoves, actualMoves)).toBe(true);
