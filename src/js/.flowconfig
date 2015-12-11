@@ -1,0 +1,9 @@
+[ignore]
+/Users/steedman87/Code/chess/node_modules/ramda
+
+[include]
+
+[libs]
+interfaces/
+
+[options]
