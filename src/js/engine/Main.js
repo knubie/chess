@@ -22,7 +22,6 @@ var between = curry(function(start, end) {
 var move = curry(function(distance1, distance2, numMoves, direction, board, piece) {
   check(arguments, [Number, Number, String, String, Board, Piece]);
   var oppositeColor = piece.color === 'white' ? 'black' : 'white';
-  var numMoves = numMoves === 'n' ? 'n' : parseInt(numMoves);
 
   // TODO: Add support for x(n/n).
 
@@ -48,7 +47,7 @@ var move = curry(function(distance1, distance2, numMoves, direction, board, piec
           if (getPieceAtPosition(board, oppositeColor, p)) {
             return p;
           } else {
-            if (numMoves === 'n' || i < numMoves) {
+            if (numMoves === 'n' || i < parseInt(numMoves)) {
               i = i + 1;
               return [p, fn(p)];
             } else {
