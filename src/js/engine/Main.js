@@ -214,9 +214,9 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
 //  isGameOver :: (Board, String) -> Maybe Boolean
 var isGameOver = curry(function(board, color) {
   check(arguments, [Board, String]);
-  return not(any(where({
-                   color: equals(color),
-                   royal: equals(true)
+  return not(any(whereEq({
+                   color: color,
+                   royal: true
                  }), board.pieces));
 });
 
@@ -226,4 +226,12 @@ var addPiece = curry(function(pieces, piece) {
   return append(piece, reject(propEq('position', piece.position), pieces));
 });
 
-module.exports = { movePiece: movePiece, getMoves: getMoves, getCaptures: getCaptures, addPiece: addPiece, getPieceAtPosition: getPieceAtPosition, makePly: makePly };
+module.exports = {
+  movePiece: movePiece,
+  getMoves: getMoves,
+  getCaptures: getCaptures,
+  addPiece: addPiece,
+  getPieceAtPosition: getPieceAtPosition,
+  makePly: makePly,
+  isGameOver: isGameOver
+};

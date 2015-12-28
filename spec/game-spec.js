@@ -177,4 +177,62 @@ describe('Game', function() {
                    Position.of({x: 4, y: 5})]))
       .toBe(true);
   });
+  it('Should not be game over if there are royals left', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'white',
+            position: Position.of({x: 4, y: 4})
+          }),
+          Piece.of({
+            name: 'king',
+            color: 'white',
+            position: Position.of({x: 2, y: 3})
+          }),
+          Piece.of({
+            name: 'king',
+            color: 'black',
+            position: Position.of({x: 4, y: 1})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 2}),
+                                game);
+    expect(Chess.isGameOver(newGame.board, 'black')).toBe(false);
+  });
+  it('Should be game over if there are no royals left', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'white',
+            position: Position.of({x: 4, y: 4})
+          }),
+          Piece.of({
+            name: 'king',
+            color: 'white',
+            position: Position.of({x: 2, y: 3})
+          }),
+          Piece.of({
+            name: 'king',
+            color: 'black',
+            position: Position.of({x: 4, y: 1})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 1}),
+                                game);
+    expect(Chess.isGameOver(newGame.board, 'black')).toBe(true);
+  });
 });
