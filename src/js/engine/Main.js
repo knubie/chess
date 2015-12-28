@@ -163,23 +163,23 @@ var pieceCallbacks = {
   }
 };
 
-//  makePly :: (Game, Position, Position) -> Game
-var makePly = curry(function(game, startingPosition, targetPosition) {
-  check(arguments, [Game, Position, Position]);
+//  makePly :: (Position, Position, Game) -> Game
+var makePly = curry(function(startingPosition, targetPosition, game) {
+  check(arguments, [Position, Position, Game]);
   var piece = getAnyPieceAtPosition(game.board, startingPosition);
   if (equals(startingPosition, targetPosition) || not(equals(piece.color, game.turn))) {
     // TODO: Add message.
     return game;
   } else {
     return Game.of(evolve({
-      board: movePiece(__, startingPosition, targetPosition),
+      board: movePiece(startingPosition, targetPosition),
       turn: function(turn) { return turn === 'white' ? 'black' : 'white'; }
     }, game));
   }
 });
-//  movePiece :: (Board, Position, Position) -> Maybe Board
-var movePiece = curry(function(board, startingPosition, targetPosition) {
-  check(arguments, [Board, Position, Position]);
+//  movePiece :: (Position, Position, Board) -> Maybe Board
+var movePiece = curry(function(startingPosition, targetPosition, board) {
+  check(arguments, [Position, Position, Board]);
 
   var piece = getAnyPieceAtPosition(board, startingPosition);
   var capturedPiece = getAnyPieceAtPosition(board, targetPosition);

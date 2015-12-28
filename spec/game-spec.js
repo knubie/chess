@@ -112,9 +112,9 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(game,
-                                Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 5}));
+    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 5}),
+                                game);
     expect(equals(newGame.turn, 'black')).toBe(true);
   });
   it('Should not change turns when a user moves a piece to its original position', function() {
@@ -131,9 +131,9 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(game,
+    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
                                 Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 4}));
+                                game);
     expect(equals(newGame.turn, 'white')).toBe(true);
   });
   it('Should only move a piece if it\'s that piece\'s turn', function() {
@@ -150,9 +150,9 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(game,
-                                Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 5}));
+    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 5}),
+                                game);
     expect(equals(game, newGame)).toBe(true);
   });
 });

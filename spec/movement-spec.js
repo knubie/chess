@@ -422,7 +422,7 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
 
 
-    var actualBoard = Chess.movePiece(board, Position.of({x: 4, y: 4}), Position.of({x: 4, y: 6}));
+    var actualBoard = Chess.movePiece(Position.of({x: 4, y: 4}), Position.of({x: 4, y: 6}), board);
     var expectedBoard = new Board({
       size: 8,
       pieces: [
@@ -519,7 +519,7 @@ describe('Movement', function() {
       ],
     });
 
-    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+    var actualBoard = Chess.movePiece(new Position({x: 4, y: 4}), new Position({x: 4, y: 0}), board);
 
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
@@ -578,7 +578,7 @@ describe('Movement', function() {
       ],
     });
 
-    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+    var actualBoard = Chess.movePiece(new Position({x: 4, y: 4}), new Position({x: 4, y: 0}), board);
 
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
@@ -632,14 +632,14 @@ describe('Movement', function() {
       ],
     });
 
-    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 4, y: 0}));
+    var actualBoard = Chess.movePiece(new Position({x: 4, y: 4}), new Position({x: 4, y: 0}), board);
 
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
 
   it('movePiece should return null when the move is invalid', function() {
     var expectedBoard = null; 
-    var actualBoard = Chess.movePiece(board, new Position({x: 4, y: 4}), new Position({x: 6, y: 6}));
+    var actualBoard = Chess.movePiece(new Position({x: 4, y: 4}), new Position({x: 6, y: 6}), board);
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
 
