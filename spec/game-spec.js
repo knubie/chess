@@ -155,4 +155,26 @@ describe('Game', function() {
                                 game);
     expect(equals(game, newGame)).toBe(true);
   });
+  it('Should append a ply after a succesful turn', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'white',
+            position: Position.of({x: 4, y: 4})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
+                                Position.of({x: 4, y: 5}),
+                                game);
+    expect(equals(newGame.plys[0],
+                  [Position.of({x: 4, y: 4}),
+                   Position.of({x: 4, y: 5})]))
+      .toBe(true);
+  });
 });

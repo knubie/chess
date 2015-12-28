@@ -19,6 +19,7 @@ function Game(opts) {
       this[k] = opts[k];
     }
   };
+  this.plys = this.plys || [];
 }
 Game.of = function(x) { return new Game(x); };
 

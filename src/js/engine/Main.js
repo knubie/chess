@@ -173,7 +173,8 @@ var makePly = curry(function(startingPosition, targetPosition, game) {
   } else {
     return Game.of(evolve({
       board: movePiece(startingPosition, targetPosition),
-      turn: function(turn) { return turn === 'white' ? 'black' : 'white'; }
+      turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
+      plys: append([startingPosition, targetPosition])
     }, game));
   }
 });
