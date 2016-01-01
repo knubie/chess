@@ -155,6 +155,20 @@ var pieceCallbacks = {
       }, board));
     },
 
+    onCaptured: function(piece, board) {
+      // piece = the captured piece.
+      // TODO: Change getMoves to actual blast radius.
+      console.log('on captured bomber');
+      return Board.of(evolve({
+        pieces: reject(
+          compose(
+            flip(contains( append(piece.position, getMoves(board, piece)) )),
+            prop('position')
+          )
+        )
+      }, board));
+    },
+
     // onCapture :: (Piece, Piece, Board) -> Board
     onCapture: function(piece, capturedPiece, board) {
       check(arguments, [Piece, Piece, Board]);
@@ -189,8 +203,12 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
     newPosition = always(startingPosition);
   }
 
-  var onCapture = capturedPiece && path([piece.name, 'onCapture'], pieceCallbacks) ||
+  var onCapture = capturedPiece &&
+                  path([piece.name, 'onCapture'], pieceCallbacks) ||
                   function(piece, capturedPiece, board) { return board; };
+  var onCaptured = capturedPiece &&
+                   path([capturedPiece.name, 'onCaptured'], pieceCallbacks) ||
+                   function(piece, board) { return board; };
 
   if (contains(targetPosition, getMoves(board, piece))) {
     var newPiece = Piece.of(evolve({
@@ -204,7 +222,11 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
                   always(newPiece),
                   indexOf(piece, board.pieces)))
     }, board));
-    return onCapture(newPiece, capturedPiece, newBoard);
+    var onCaptureBoard = onCapture(newPiece, capturedPiece, newBoard);
+    var onCapturedBoard = onCaptured(capturedPiece, onCaptureBoard);
+    //var finalBoard = compose(onCaptured(capturedPiece),
+                             //onCapture(newPiece, capturedPiece));
+    return onCapturedBoard;
   } else {
     // TODO: return message
     return null;
