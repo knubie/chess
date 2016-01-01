@@ -18,6 +18,11 @@ var between = curry(function(start, end) {
   return start < end ? range(start + 1, end) : range(end + 1, start);
 });
 
+//  isCapturable :: (Maybe(Piece)) -> Boolean
+var isCapturable = curry(function(piece) {
+  return not(prop('invincible', piece || {}));
+});
+
 //  move :: (Number, Number, String, String, Board, Piece) -> [Position]
 var move = curry(function(distance1, distance2, numMoves, direction, board, piece) {
   check(arguments, [Number, Number, String, String, Board, Piece]);
@@ -43,7 +48,10 @@ var move = curry(function(distance1, distance2, numMoves, direction, board, piec
         var wrongDirection = ((((forwards && white) || (backwards && black)) && (p.y <= piece.position.y)) ||
           (((backwards && white) || (forwards && black)) && (p.y >= piece.position.y))  ||
           (sideways && (p.y !== piece.position.y)))
-        if (legalPosition(board, p) && !wrongDirection && !getPieceAtPosition(board, piece.color, p)) {
+        if (legalPosition(board, p) &&
+            !wrongDirection &&
+            !getPieceAtPosition(board, piece.color, p) &&
+            isCapturable(getAnyPieceAtPosition(board, p))) {
           if (getPieceAtPosition(board, oppositeColor, p)) {
             return p;
           } else {
@@ -158,7 +166,6 @@ var pieceCallbacks = {
     onCaptured: function(piece, board) {
       // piece = the captured piece.
       // TODO: Change getMoves to actual blast radius.
-      console.log('on captured bomber');
       return Board.of(evolve({
         pieces: reject(
           compose(
@@ -224,8 +231,6 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
     }, board));
     var onCaptureBoard = onCapture(newPiece, capturedPiece, newBoard);
     var onCapturedBoard = onCaptured(capturedPiece, onCaptureBoard);
-    //var finalBoard = compose(onCaptured(capturedPiece),
-                             //onCapture(newPiece, capturedPiece));
     return onCapturedBoard;
   } else {
     // TODO: return message

@@ -138,6 +138,16 @@ module.exports = {
       }, board);
     }
   },
+  'wall': {
+    parlett: [
+      {
+        movement: '0/0',
+        distance: '0'
+      }
+    ],
+    points: 2,
+    invincible: true
+  },
   ////////// Fairies //////////
   'dabbaba': {
     parlett: [{
