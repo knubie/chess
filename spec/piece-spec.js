@@ -102,11 +102,33 @@ describe('Pieces', function() {
     var actualBoard = Chess.movePiece(
         Position.of({x: 2, y: 3}), Position.of({x: 3, y: 1}),
         board);
-    console.log(actualBoard.pieces);
     var expectedBoard = new Board({
       size: 8,
       pieces: [ ],
     });
     expect(equals(expectedBoard, actualBoard)).toBe(true);
+  });
+  it('A wall cannot be captured', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'wazir',
+          color: 'white',
+          position: new Position({x: 2, y: 0})
+        }),
+        new Piece({
+          name: 'wall',
+          color: 'black',
+          position: new Position({x: 2, y: 1})
+        }),
+      ],
+    });
+    var actualMoves = Chess.getMoves(board, board.pieces[0]);
+    var expectedMoves = [
+      {x: 1, y: 0 },
+      {x: 3, y: 0 },
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 });
