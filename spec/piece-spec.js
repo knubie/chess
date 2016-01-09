@@ -131,4 +131,23 @@ describe('Pieces', function() {
     ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
+  it('Bloodlust\'s movement should increase after every capture', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        Piece.of({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        Piece.of({
+          name: 'bloodlust',
+          color: 'black',
+          position: Position.of({x: 3, y: 4})
+        })
+      ],
+    });
+    var actualBoard = Chess.movePiece(board.pieces[1].position, board.pieces[0].position, board);
+    expect(actualBoard.pieces[0].parlett[0].distance).toBe('2');
+  });
 });
