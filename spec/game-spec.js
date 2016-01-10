@@ -146,6 +146,31 @@ describe('Game', function() {
                                 });
     expect(equals(newGame.turn, 'black')).toBe(true);
   });
+  it('The afterEveryPly callbacks should fire after every ply', function() {
+    var game = Game.of({
+      turn: 'white',
+      board: Board.of({
+        size: 8,
+        pieces: [
+          Piece.of({
+            name: 'rook',
+            color: 'white',
+            position: Position.of({x: 4, y: 4})
+          }),
+          Piece.of({
+            name: 'mine',
+            color: 'white',
+            position: Position.of({x:4, y:3})
+          })
+        ]
+      })
+    }); // game
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 5})
+                                });
+    expect(newGame.resources[0]).toBe(46);
+  });
   it('Should not change turns when a user moves a piece to its original position', function() {
     var game = Game.of({
       turn: 'white',

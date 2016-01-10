@@ -136,7 +136,7 @@ var getCaptures = curry(function(board, piece) {
 var pieceCallbacks = {
   bloodlust: {
     // onCapture :: (Piece, Piece, Board) -> Board
-    onCapture: function(piece, capturedPiece, board) {
+    onCapture: curry(function(piece, capturedPiece, board) {
       check(arguments, [Piece, Piece, Board]);
       return Board.of(evolve({
         pieces: adjust(
@@ -147,10 +147,12 @@ var pieceCallbacks = {
                       parlett: map(evolve({ distance: compose(
                                                         add(''),
                                                         add(1),
-                                                        parseInt) })) })),
+                                                        parseInt,
+                                                        // FIXME: why is this necessary??
+                                                        add('')) })) })),
                   indexOf(piece, board.pieces))
       }, board));
-    }
+    })
   },
   bomber: {
     ability: function(piece, board) {
