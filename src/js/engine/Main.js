@@ -154,6 +154,18 @@ var pieceCallbacks = {
       }, board));
     })
   },
+  shapeshifter: {
+    // onCapture :: (Piece, Piece, Board) -> Board
+    onCapture: curry(function(piece, capturedPiece, board) {
+      check(arguments, [Piece, Piece, Board]);
+      var newPiece = Piece.of(evolve({color: always(piece.color)}, capturedPiece))
+      return Board.of(evolve({
+        pieces: adjust(
+                  always(newPiece),
+                  indexOf(piece, board.pieces))
+      }, board));
+    })
+  },
   bomber: {
     ability: function(piece, board) {
       var surroundingPieces = [];

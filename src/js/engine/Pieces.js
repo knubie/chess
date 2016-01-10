@@ -112,6 +112,21 @@ module.exports = {
       parlett: map(evolve({ distance: add(1) }))
     })
   },
+  'shapeshifter': {
+    parlett: [
+      {
+        distance: '1',
+        movement: '1/0',
+        direction: 'forwards'
+      },
+      {
+        distance: '1',
+        movement: '1/1',
+        direction: 'forwards'
+      }
+    ],
+    points: 3
+  },
   'bomber': {
     parlett: [
       {
