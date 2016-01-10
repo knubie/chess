@@ -184,21 +184,49 @@ var pieceCallbacks = {
   }
 };
 
-//  makePly :: (Position, Position, Game) -> Game
-var makePly = curry(function(startingPosition, targetPosition, game) {
-  check(arguments, [Position, Position, Game]);
-  var piece = getAnyPieceAtPosition(game.board, startingPosition);
-  if (equals(startingPosition, targetPosition) || not(equals(piece.color, game.turn))) {
-    // TODO: Add message.
-    return game;
-  } else {
-    return Game.of(evolve({
-      board: movePiece(startingPosition, targetPosition),
-      turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
-      plys: append([startingPosition, targetPosition])
-    }, game));
+//  makePly :: (String, Game, Object) -> Maybe Game
+var makePly = curry(function(plyType, game, opts) {
+  var newGame = null;
+  switch (plyType) {
+    case 'move':
+      var startingPosition = opts.startingPosition
+        , targetPosition = opts.targetPosition;
+      check([startingPosition, targetPosition], [Position, Position]);
+      var piece = getAnyPieceAtPosition(game.board, startingPosition);
+      if (equals(startingPosition, targetPosition) ||
+          not(equals(piece.color, game.turn)) ||
+          // movePiece returns null if it's not a valid targetPosition
+          not(movePiece(startingPosition, targetPosition, game.board))) {
+        // TODO: Add message.
+        newGame = game;
+      } else {
+        newGame = Game.of(evolve({
+          board: movePiece(startingPosition, targetPosition),
+          turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
+          plys: append([startingPosition, targetPosition])
+        }, game));
+      }
+    case 'ability':
+    case 'draft':
   }
+  var piecesWithAfterEveryPlyCallback = filter(
+    compose(
+      path(__, pieceCallbacks),
+      prepend(__, ['afterEveryPly']),
+      prop('name')
+    )
+  , newGame.board.pieces);
+  var piecesWithAfterEveryPlyCallbackAndColor = filter(
+  propEq('color', game.turn)
+  , piecesWithAfterEveryPlyCallback);
+
+  return reduce(function(game, piece) {
+    return path([piece.name, 'afterEveryPly'], pieceCallbacks)(game, piece);
+  }, newGame, piecesWithAfterEveryPlyCallbackAndColor);
+
+  //return afterEveryPlyCallback(piecesWithAfterEveryPlyCallbackAndColor[0], newGame);
 });
+
 //  movePiece :: (Position, Position, Board) -> Maybe Board
 var movePiece = curry(function(startingPosition, targetPosition, board) {
   check(arguments, [Position, Position, Board]);
@@ -253,6 +281,26 @@ var addPiece = curry(function(pieces, piece) {
   return append(piece, reject(propEq('position', piece.position), pieces));
 });
 
+//  addPieceToBoard :: (Piece) -> Board
+var addPieceToBoard = curry(function(piece, board) {
+  return Board.of(evolve({
+    pieces: addPiece(__, piece)
+  }, board));
+});
+
+// draftPiece :: (Game, Piece) -> Maybe Game
+var draftPiece = curry(function(piece, game) {
+  var index = piece.color === 'white' ? 0 : 1;
+  if (piece.points <= game.resources[index]) {
+    return Game.of(evolve({
+      board: addPieceToBoard(piece),
+      resources: adjust(subtract(__, piece.points), index)
+    }, game));
+  } else {
+    return null;
+  }
+});
+
 module.exports = {
   movePiece: movePiece,
   getMoves: getMoves,
@@ -260,5 +308,6 @@ module.exports = {
   addPiece: addPiece,
   getPieceAtPosition: getPieceAtPosition,
   makePly: makePly,
-  isGameOver: isGameOver
+  isGameOver: isGameOver,
+  draftPiece: draftPiece,
 };

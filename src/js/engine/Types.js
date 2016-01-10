@@ -20,6 +20,9 @@ function Game(opts) {
     }
   };
   this.plys = this.plys || [];
+  // resources[0] = white
+  // resources[1] = black
+  this.resources = this.resources || [45, 45];
 }
 Game.of = function(x) { return new Game(x); };
 

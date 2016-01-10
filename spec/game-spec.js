@@ -98,6 +98,34 @@ describe('Game', function() {
       }),
     ]
   });
+  it('Drafting a piece should reduce that users resources by the point value of the piece', function() {
+    var actualGame = Chess.draftPiece(Piece.of({
+                       name: 'rook',
+                       color: 'white',
+                       position: new Position({x: 4, y: 2})
+                     }), game);
+    
+    expect(actualGame.resources[0]).toBe(40);
+  });
+  it('Drafting a piece should add that piece to the Board\'s pieces array granted the user has enough resources to add the piece', function() {
+    var actualGame = Chess.draftPiece(Piece.of({
+                       name: 'rook',
+                       color: 'white',
+                       position: new Position({x: 4, y: 2})
+                     }), game);
+    
+    expect(actualGame.board.pieces.length).toBe(2);
+  });
+  it('Drafting a piece with a higher point value than the users resources should return null', function() {
+    var actualGame = Chess.draftPiece(Piece.of({
+                       name: 'rook',
+                       color: 'white',
+                       points: 100,
+                       position: new Position({x: 4, y: 2})
+                     }), game);
+    
+    expect(actualGame).toBe(null);
+  });
   it('Should change turns when a user makes a ply', function() {
     var game = Game.of({
       turn: 'white',
@@ -112,9 +140,10 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 5}),
-                                game);
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 5})
+                                });
     expect(equals(newGame.turn, 'black')).toBe(true);
   });
   it('Should not change turns when a user moves a piece to its original position', function() {
@@ -131,9 +160,10 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 4}),
-                                game);
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 4})
+                                });
     expect(equals(newGame.turn, 'white')).toBe(true);
   });
   it('Should only move a piece if it\'s that piece\'s turn', function() {
@@ -150,9 +180,10 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 5}),
-                                game);
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 5})
+                                });
     expect(equals(game, newGame)).toBe(true);
   });
   it('Should append a ply after a succesful turn', function() {
@@ -169,9 +200,10 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 5}),
-                                game);
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 5})
+                                });
     expect(equals(newGame.plys[0],
                   [Position.of({x: 4, y: 4}),
                    Position.of({x: 4, y: 5})]))
@@ -201,9 +233,10 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 2}),
-                                game);
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 2})
+                                });
     expect(Chess.isGameOver(newGame.board, 'black')).toBe(false);
   });
   it('Should be game over if there are no royals left', function() {
@@ -230,9 +263,10 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly(Position.of({x: 4, y: 4}),
-                                Position.of({x: 4, y: 1}),
-                                game);
+    var newGame = Chess.makePly('move', game, {
+                                  startingPosition: Position.of({x: 4, y: 4}),
+                                  targetPosition: Position.of({x: 4, y: 1})
+                                });
     expect(Chess.isGameOver(newGame.board, 'black')).toBe(true);
   });
 });
