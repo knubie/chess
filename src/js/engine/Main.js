@@ -167,7 +167,7 @@ var pieceCallbacks = {
     })
   },
   bomber: {
-    ability: function(piece, board) {
+    ability: curry(function(piece, board) {
       var surroundingPieces = [];
       return Board.of(evolve({
         pieces: reject(
@@ -175,9 +175,9 @@ var pieceCallbacks = {
                     any(__, surroundingPieces),
                     equals))
       }, board));
-    },
 
-    onCaptured: function(piece, board) {
+    }),
+    onCaptured: curry(function(piece, board) {
       // piece = the captured piece.
       // TODO: Change getMoves to actual blast radius.
       return Board.of(evolve({
@@ -188,13 +188,21 @@ var pieceCallbacks = {
           )
         )
       }, board));
-    },
+    }),
 
     // onCapture :: (Piece, Piece, Board) -> Board
-    onCapture: function(piece, capturedPiece, board) {
+    onCapture: curry(function(piece, capturedPiece, board) {
       check(arguments, [Piece, Piece, Board]);
       return board;
-    }
+    })
+  },
+  mine: {
+    afterEveryPly: curry(function(game, piece) {
+      var index = piece.color === 'white' ? 0 : 1;
+      return Game.of(evolve({
+        resources: adjust(add(1), index) // Add one to resources of same color as piece.
+      }, game));
+    })
   }
 };
 
@@ -254,10 +262,10 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
 
   var onCapture = capturedPiece &&
                   path([piece.name, 'onCapture'], pieceCallbacks) ||
-                  function(piece, capturedPiece, board) { return board; };
+                  curry(function(piece, capturedPiece, board) { return board; });
   var onCaptured = capturedPiece &&
                    path([capturedPiece.name, 'onCaptured'], pieceCallbacks) ||
-                   function(piece, board) { return board; };
+                   curry(function(piece, board) { return board; });
 
   if (contains(targetPosition, getMoves(board, piece))) {
     var newPiece = Piece.of(evolve({
@@ -271,9 +279,10 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
                   always(newPiece),
                   indexOf(piece, board.pieces)))
     }, board));
-    var onCaptureBoard = onCapture(newPiece, capturedPiece, newBoard);
-    var onCapturedBoard = onCaptured(capturedPiece, onCaptureBoard);
-    return onCapturedBoard;
+    return compose(
+      onCaptured(capturedPiece),
+      onCapture(newPiece, capturedPiece)
+    )(newBoard);
   } else {
     // TODO: return message
     return null;
