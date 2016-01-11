@@ -20,7 +20,8 @@ var between = curry(function(start, end) {
 
 //  isCapturable :: (Maybe(Piece)) -> Boolean
 var isCapturable = curry(function(piece) {
-  return not(prop('invincible', piece || {}));
+  // FIXME: add Maybe support
+  return not(contains('invincible', prop('types', piece || {types: []})));
 });
 
 //  move :: (Number, Number, String, String, Board, Piece) -> [Position]
@@ -175,7 +176,6 @@ var pieceCallbacks = {
                     any(__, surroundingPieces),
                     equals))
       }, board));
-
     }),
     onCaptured: curry(function(piece, board) {
       // piece = the captured piece.
@@ -256,7 +256,7 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
   var piece = getAnyPieceAtPosition(board, startingPosition);
   var capturedPiece = getAnyPieceAtPosition(board, targetPosition);
   var newPosition = always(targetPosition);
-  if (capturedPiece && any(propEq('moveType', 'gun'), piece.parlett)) {
+  if (capturedPiece && contains('ranged', piece.types)) {
     newPosition = always(startingPosition);
   }
 
@@ -289,18 +289,22 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
   }
 });
 
-//  isGameOver :: (Board, String) -> Maybe Boolean
+//  isGameOver :: (Board, String) -> Boolean
 var isGameOver = curry(function(board, color) {
   check(arguments, [Board, String]);
-  return not(any(whereEq({
-                   color: color,
-                   royal: true
+  return not(any(where({
+                   color: equals(color),
+                   types: contains('royal')
                  }), board.pieces));
 });
 
 //  addPiece :: ([Piece], Piece) -> [Piece]
 var addPiece = curry(function(pieces, piece) {
   check(arguments, [[Piece], Piece]);
+  //compose(
+    //append(piece),
+    //reject(propEq('position', piece.position))
+  //)
   return append(piece, reject(propEq('position', piece.position), pieces));
 });
 

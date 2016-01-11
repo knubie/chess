@@ -74,7 +74,7 @@ module.exports = {
       }
     ],
     points: 5,
-    royal: true
+    types: ['royal']
   },
   ///////// Custom pieces //////////
   'cannon': {
@@ -86,13 +86,13 @@ module.exports = {
       },
       {
         conditions: ['c'],
-        moveType: 'gun',
         movement: '1/0',
         direction: 'forwards',
         distance: 'n'
       }
     ],
-    points: 12
+    points: 12,
+    types: ['ranged']
   },
   'bloodlust': {
     parlett: [
@@ -141,6 +141,8 @@ module.exports = {
       }
     ],
     points: 5,
+    ability: function(board) {
+    },
     // onCaptureBoard :: Board -> Board
     onCaptureBoard: function(board) {
       return evolve({
@@ -161,7 +163,16 @@ module.exports = {
       }
     ],
     points: 2,
-    invincible: true
+    types: ['invincible']
+  },
+  'mine': {
+    parlett: [
+      {
+        movement: '0/0',
+        distance: '0'
+      }
+    ],
+    points: 5
   },
   ////////// Fairies //////////
   'dabbaba': {

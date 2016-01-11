@@ -45,6 +45,19 @@ Board.of = function(x) { return new Board(x); };
 function Piece(opts) {
   check([opts,   opts.name, opts.color, opts.position],
         [Object, String,    String,     Position]);
+  // name     :: 'string'
+  // color    :: 'white' | 'black' // should be: 0 | 1
+  // position :: Position
+  // points   :: Int
+  // types    :: ['royal', 'ranged', 'invincible', 'hidden']
+  // moves    :: Int
+  // captures :: Int
+  // parlett  :: {
+  //   conditions :: ['o', 'c', 'i']
+  //   movement   :: 'n/n' // should be: [Int, Int]
+  //   distance   :: Int
+  //   direction  :: ['forwards', 'backwards', 'sideways']
+  // }
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
       this[k] = opts[k];
@@ -60,8 +73,7 @@ function Piece(opts) {
 
   this.parlett = this.parlett || pieces[opts.name].parlett;
   this.points = this.points || pieces[opts.name].points;
-  this.royal = this.royal || pieces[opts.name].royal;
-  this.invincible = this.invincible || pieces[opts.name].invincible;
+  this.types = this.types || pieces[opts.name].types || [];
   this.moves = this.moves || 0;
   this.captures = this.captures || 0;
   this.onCapture = pieces[opts.name].onCapture || identity;
