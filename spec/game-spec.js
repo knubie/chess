@@ -105,7 +105,7 @@ describe('Game', function() {
                        position: new Position({x: 4, y: 2})
                      }), game);
     
-    expect(actualGame.resources[0]).toBe(40);
+    expect(actualGame.__value.resources[0]).toBe(40);
   });
   it('Drafting a piece should add that piece to the Board\'s pieces array granted the user has enough resources to add the piece', function() {
     var actualGame = Chess.draftPiece(Piece.of({
@@ -114,7 +114,7 @@ describe('Game', function() {
                        position: new Position({x: 4, y: 2})
                      }), game);
     
-    expect(actualGame.board.pieces.length).toBe(2);
+    expect(actualGame.__value.board.pieces.length).toBe(2);
   });
   it('Drafting a piece with a higher point value than the users resources should return null', function() {
     var actualGame = Chess.draftPiece(Piece.of({
@@ -144,7 +144,7 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 5})
                                 });
-    expect(equals(newGame.turn, 'black')).toBe(true);
+    expect(equals(newGame.__value.turn, 'black')).toBe(true);
   });
   it('The afterEveryPly callbacks should fire after every ply', function() {
     var game = Game.of({
@@ -169,7 +169,7 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 5})
                                 });
-    expect(newGame.resources[0]).toBe(46);
+    expect(newGame.__value.resources[0]).toBe(46);
   });
   it('Should not change turns when a user moves a piece to its original position', function() {
     var game = Game.of({
@@ -189,7 +189,7 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 4})
                                 });
-    expect(equals(newGame.turn, 'white')).toBe(true);
+    expect(equals(newGame.__value.turn, 'white')).toBe(true);
   });
   it('Should only move a piece if it\'s that piece\'s turn', function() {
     var game = Game.of({
@@ -229,7 +229,7 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 5})
                                 });
-    expect(equals(newGame.plys[0],
+    expect(equals(newGame.__value.plys[0],
                   [Position.of({x: 4, y: 4}),
                    Position.of({x: 4, y: 5})]))
       .toBe(true);
@@ -262,7 +262,7 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 2})
                                 });
-    expect(Chess.isGameOver(newGame.board, 'black')).toBe(false);
+    expect(Chess.isGameOver(newGame.__value.board, 'black')).toBe(false);
   });
   it('Should be game over if there are no royals left', function() {
     var game = Game.of({
@@ -292,6 +292,6 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 1})
                                 });
-    expect(Chess.isGameOver(newGame.board, 'black')).toBe(true);
+    expect(Chess.isGameOver(newGame.__value.board, 'black')).toBe(true);
   });
 });

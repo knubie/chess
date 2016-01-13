@@ -14,17 +14,22 @@ for (var k in R) {
 //  Game { turn :: String, board :: Board }
 function Game(opts) {
   check([opts, opts.turn, opts.board], [Object, String, Board]);
+  this.__value = {}
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
-      this[k] = opts[k];
+      this.__value[k] = opts[k];
     }
   };
-  this.plys = this.plys || [];
+  this.__value.plys = this.__value.plys || [];
   // resources[0] = white
   // resources[1] = black
-  this.resources = this.resources || [45, 45];
+  this.__value.resources = this.__value.resources || [45, 45];
 }
 Game.of = function(x) { return new Game(x); };
+
+Game.prototype.map = function(f) {
+  return Game.of(f(this.__value));
+}
 
 // Board { size :: Number, pieces :: [Piece] }
 function Board(opts) {
