@@ -25,12 +25,14 @@ var Board = React.createClass({
   },
   clickSquare: function(x, y, piece) {
     var position = Types.Position.of({ x: x, y: y });
-    if (this.state.selectedPiece) { // TODO: or piece
+    var movedPiece = this.state.selectedPiece || piece;
+    // Account for moving to other friendly piece.
+    if (this.state.selectedPiece) {
       this.setState({
         possibleMoves: [],
         game: Chess.makePly(this.state.game,
-                               this.state.selectedPiece.position,
-                               position),
+                            movedPiece.position,
+                            position),
         selectedPiece: null
       });
     }

@@ -6,8 +6,6 @@ var itemTypes = {
 };
 var squareTarget = {
   drop: function (props, monitor) {
-    console.log('drop');
-    console.log(monitor.getItem());
     props.onDrop(props.x, props.y, monitor.getItem().piece);
   }
 };
