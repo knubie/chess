@@ -1,5 +1,6 @@
 var R        = require('ramda');
 var Board    = require('../src/js/engine/Types').Board;
+var Game    = require('../src/js/engine/Types').Game;
 var Piece    = require('../src/js/engine/Types').Piece;
 var Position = require('../src/js/engine/Types').Position;
 var Chess    = require('../src/js/engine/Main.js')
@@ -36,6 +37,47 @@ var compare = function(arr1, arr2, i) {
 }
 
 describe('Pieces', function() {
+  it('Teleporter should swap pieces with friendly pieces', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'teleporter',
+          color: 'white',
+          position: new Position({x: 3, y: 3})
+        })
+      ],
+    });
+    var game = new Game({
+      turn: 'white',
+      board: board
+    });
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'teleporter',
+          color: 'white',
+          position: new Position({x: 4, y: 4}),
+          moves: 1
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 3, y: 3})
+        })
+      ],
+    });
+    var actualBoard = Chess.movePiece(
+      Position.of({x: 3, y: 3}), Position.of({x: 4, y: 4}),
+      board);
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
+  });
   it('Bomber should blow up surrounding pieces', function() {
     var board = new Board({
       size: 8,
