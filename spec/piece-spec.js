@@ -150,6 +150,88 @@ describe('Pieces', function() {
     });
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
+  it('Bomber ability should blow up surrounding pieces', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 0})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 3, y: 0})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 4, y: 0})
+        }),
+
+
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 1})
+        }),
+        new Piece({
+          name: 'bomber',
+          color: 'white',
+          position: new Position({x: 3, y: 1})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 4, y: 1})
+        }),
+
+
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 2})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 3, y: 2})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 4, y: 2})
+        }),
+
+
+
+        new Piece({
+          name: 'knight',
+          color: 'black',
+          position: new Position({x: 2, y: 3})
+        }),
+      ],
+    });
+    var game = new Game({
+      turn: 'white',
+      board: board
+    });
+    var actualGame = Chess.makePly('ability', game, {
+      startingPosition: Position.of({x: 3, y: 1})
+    });
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'knight',
+          color: 'black',
+          position: new Position({x: 2, y: 3})
+        })
+      ],
+    });
+    expect(equals(expectedBoard, actualGame.board)).toBe(true);
+  });
   it('A wall cannot be captured', function() {
     var board = new Board({
       size: 8,

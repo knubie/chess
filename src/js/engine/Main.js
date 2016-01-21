@@ -186,12 +186,23 @@ var pieceCallbacks = {
   },
   bomber: {
     ability: curry(function(piece, board) {
-      var surroundingPieces = [];
+      var surroundingSquares = [
+        piece.position,
+        Position.of({x: piece.position.x, y: piece.position.y - 1}),
+        Position.of({x: piece.position.x + 1, y: piece.position.y - 1}),
+        Position.of({x: piece.position.x + 1, y: piece.position.y}),
+        Position.of({x: piece.position.x + 1, y: piece.position.y + 1}),
+        Position.of({x: piece.position.x, y: piece.position.y + 1}),
+        Position.of({x: piece.position.x - 1, y: piece.position.y + 1}),
+        Position.of({x: piece.position.x - 1, y: piece.position.y}),
+        Position.of({x: piece.position.x - 1, y: piece.position.y - 1}),
+      ];
       return Board.of(evolve({
         pieces: reject(
-                  comspose(
-                    any(__, surroundingPieces),
-                    equals))
+                  compose(
+                    any(__, surroundingSquares),
+                    equals,
+                    prop('position')))
       }, board));
     }),
     onCaptured: curry(function(piece, board) {
@@ -241,11 +252,13 @@ var customMovement = {
 
 //  makePly :: (String, Game, Object) -> Maybe Game
 var makePly = curry(function(plyType, game, opts) {
-  var newGame = null;
+  var newGame = null
+    , startingPosition = opts.startingPosition
+    , targetPosition = opts.targetPosition
+    , piece = getAnyPieceAtPosition(game.board, opts.startingPosition);
+
   switch (plyType) {
     case 'move':
-      var startingPosition = opts.startingPosition
-        , targetPosition = opts.targetPosition;
       check([startingPosition, targetPosition], [Position, Position]);
       var piece = getAnyPieceAtPosition(game.board, startingPosition);
       if (equals(startingPosition, targetPosition) ||
@@ -262,6 +275,13 @@ var makePly = curry(function(plyType, game, opts) {
         }, game));
       }
     case 'ability':
+      if (piece.name && pieceCallbacks[piece.name] && pieceCallbacks[piece.name].ability) {
+        newGame = Game.of(evolve({
+          board: pieceCallbacks[piece.name].ability(piece),
+          turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
+          plys: append([startingPosition, targetPosition])
+        }, game));
+      }
     case 'draft':
   }
   var piecesWithAfterEveryPlyCallback = filter(
