@@ -280,7 +280,8 @@ var makePly = curry(function(plyType, game, opts) {
         newGame = Game.of(evolve({
           board: pieceCallbacks[piece.name].ability(piece),
           turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
-          plys: append([startingPosition, targetPosition])
+          // TODO: make this more clear.
+          plys: append([startingPosition, targetPosition || startingPosition])
         }, game));
       }
       break;
