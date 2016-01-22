@@ -42,7 +42,7 @@ describe('Pieces', function() {
       size: 8,
       pieces: [
         new Piece({
-          name: 'rook',
+          name: 'bomber',
           color: 'white',
           position: new Position({x: 4, y: 4})
         }),
@@ -67,7 +67,7 @@ describe('Pieces', function() {
           moves: 1
         }),
         new Piece({
-          name: 'rook',
+          name: 'bomber',
           color: 'white',
           position: new Position({x: 3, y: 3})
         })
@@ -78,7 +78,32 @@ describe('Pieces', function() {
       board);
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
-  it('Bomber should blow up surrounding pieces', function() {
+  it('Bomber should remove any piece at it\s position when captured.', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'bomber',
+          color: 'white',
+          position: new Position({x: 3, y: 1})
+        }),
+        new Piece({
+          name: 'knight',
+          color: 'black',
+          position: new Position({x: 2, y: 3})
+        }),
+      ],
+    });
+    var actualBoard = Chess.movePiece(
+        Position.of({x: 2, y: 3}), Position.of({x: 3, y: 1}),
+        board);
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [ ],
+    });
+    expect(equals(expectedBoard, actualBoard)).toBe(true);
+  });
+  it('Bomber should not blow up pieces when moving to an empty square', function() {
     var board = new Board({
       size: 8,
       pieces: [
@@ -124,7 +149,68 @@ describe('Pieces', function() {
         new Piece({
           name: 'pawn',
           color: 'white',
-          position: new Position({x: 3, y: 2})
+          position: new Position({x: 4, y: 2})
+        }),
+
+
+
+        new Piece({
+          name: 'knight',
+          color: 'black',
+          position: new Position({x: 2, y: 3})
+        }),
+      ],
+    });
+    var game = new Game({
+      turn: 'white',
+      board: board
+    });
+    var actualGame = Chess.makePly('move', game, {
+      startingPosition: Position.of({x: 3, y: 1}),
+      targetPosition: Position.of({x: 3, y: 2})
+    });
+    var expectedBoard = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 0})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 3, y: 0})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 4, y: 0})
+        }),
+
+
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 1})
+        }),
+        new Piece({
+          name: 'bomber',
+          color: 'white',
+          position: new Position({x: 3, y: 2}),
+          moves: 1
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 4, y: 1})
+        }),
+
+
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 2})
         }),
         new Piece({
           name: 'pawn',
@@ -141,14 +227,7 @@ describe('Pieces', function() {
         }),
       ],
     });
-    var actualBoard = Chess.movePiece(
-        Position.of({x: 2, y: 3}), Position.of({x: 3, y: 1}),
-        board);
-    var expectedBoard = new Board({
-      size: 8,
-      pieces: [ ],
-    });
-    expect(equals(expectedBoard, actualBoard)).toBe(true);
+    expect(equals(expectedBoard, actualGame.board)).toBe(true);
   });
   it('Bomber ability should blow up surrounding pieces', function() {
     var board = new Board({

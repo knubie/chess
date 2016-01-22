@@ -206,22 +206,12 @@ var pieceCallbacks = {
       }, board));
     }),
     onCaptured: curry(function(piece, board) {
+      // Removes any piece on the square of the captured piece.
       // piece = the captured piece.
       // TODO: Change getMoves to actual blast radius.
       return Board.of(evolve({
-        pieces: reject(
-          compose(
-            flip(contains( append(piece.position, getMoves(board, piece)) )),
-            prop('position')
-          )
-        )
+        pieces: reject(propEq('position', piece.position))
       }, board));
-    }),
-
-    // onCapture :: (Piece, Piece, Board) -> Board
-    onCapture: curry(function(oldPiece, piece, capturedPiece, board) {
-      check(arguments, [Piece, Piece, Piece, Board]);
-      return board;
     })
   },
   mine: {
