@@ -132,13 +132,11 @@ module.exports = {
     parlett: [
       {
         distance: '1',
-        movement: '1/0',
-        direction: 'forwards'
+        movement: '1/0'
       },
       {
         distance: '1',
-        movement: '1/1',
-        direction: 'forwards'
+        movement: '1/1'
       }
     ],
     points: 3
