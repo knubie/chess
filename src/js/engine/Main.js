@@ -274,6 +274,7 @@ var makePly = curry(function(plyType, game, opts) {
           plys: append([startingPosition, targetPosition])
         }, game));
       }
+      break;
     case 'ability':
       if (piece.name && pieceCallbacks[piece.name] && pieceCallbacks[piece.name].ability) {
         newGame = Game.of(evolve({
@@ -282,7 +283,9 @@ var makePly = curry(function(plyType, game, opts) {
           plys: append([startingPosition, targetPosition])
         }, game));
       }
+      break;
     case 'draft':
+      break;
   }
   var piecesWithAfterEveryPlyCallback = filter(
     compose(
