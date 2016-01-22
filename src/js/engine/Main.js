@@ -317,7 +317,8 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
   var onCapture = capturedPiece &&
                   path([piece.name, 'onCapture'], pieceCallbacks) ||
                   curry(function(oldPiece, piece, capturedPiece, board) { return board; });
-  var onCaptured = capturedPiece &&
+  // TODO: is equality check appropriate?
+  var onCaptured = capturedPiece && capturedPiece.color !== piece.color &&
                    path([capturedPiece.name, 'onCaptured'], pieceCallbacks) ||
                    curry(function(piece, board) { return board; });
 
