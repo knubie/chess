@@ -88,7 +88,7 @@ module.exports = {
         conditions: ['c'],
         movement: '1/0',
         direction: 'forwards',
-        distance: 'n'
+        distance: '5'
       }
     ],
     points: 12,
@@ -139,7 +139,7 @@ module.exports = {
         movement: '1/1'
       }
     ],
-    points: 3
+    points: 2.5
   },
   'bomber': {
     parlett: [
@@ -154,7 +154,7 @@ module.exports = {
         distance: '1'
       }
     ],
-    points: 5,
+    points: 3,
     ability: function(board) {
     },
     // onCaptureBoard :: Board -> Board
@@ -226,14 +226,14 @@ module.exports = {
       movement: '1/0',
       distance: '1'
     }],
-    points: 2
+    points: 1.5
   },
   'ferz': {
     parlett: [{
       movement: '1/1',
       distance: '1'
     }],
-    points: 2
+    points: 1.5
   },
   'archbishop': {
     parlett: [
