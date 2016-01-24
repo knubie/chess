@@ -104,6 +104,16 @@ describe('Game', function() {
                        color: 'white',
                        position: new Position({x: 4, y: 2})
                      }), game);
+
+    var actualGame = Chess.makePly('draft', game, {
+      startingPosition: null,
+      targetPosition: new Position({x: 4, y: 2}),
+      piece: Piece.of({
+               name: 'rook',
+               color: 'white',
+               position: new Position({x: 4, y: 2})
+             })
+    });
     
     expect(actualGame.resources[0]).toBe(40);
   });

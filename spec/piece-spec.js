@@ -311,6 +311,27 @@ describe('Pieces', function() {
     });
     expect(equals(expectedBoard, actualGame.board)).toBe(true);
   });
+  it('The mine\'s ability should add one resource to the players resources.', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'mine',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        })
+      ],
+    });
+    var game = new Game({
+      turn: 'white',
+      resources: [10, 10],
+      board: board
+    });
+    var actualGame = Chess.makePly('ability', game, {
+      startingPosition: Position.of({x: 4, y: 4})
+    });
+    expect(actualGame.resources[0]).toBe(12);
+  });
   it('A wall cannot be captured', function() {
     var board = new Board({
       size: 8,
