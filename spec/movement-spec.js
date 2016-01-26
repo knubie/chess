@@ -506,6 +506,60 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
 
+  it('get defends should return a list of pieces being defended', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'white',
+          position: new Position({x: 2, y: 4})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 6})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 0})
+        }),
+        new Piece({
+          name: 'rook',
+          color: 'black',
+          position: new Position({x: 4, y: 7}) // doesn't get blocked
+        })
+      ],
+    });
+    var p = board.pieces[0];
+    var actualMoves = Chess.getDefends(board, p);
+    var expectedMoves = [
+      //{x: 4, y: 0}, // Black piece
+      //{x: 4, y: 1},
+      //{x: 4, y: 2},
+      //{x: 4, y: 3},
+      //{x: 4, y: 5},
+      //{x: 4, y: 6}, // Black piece
+      //{x: 4, y: 7}, // Black piece
+
+      //{y: 4, x: 0},
+      //{y: 4, x: 1},
+      {y: 4, x: 2}, // White blocking
+      //{y: 4, x: 3},
+      //{y: 4, x: 5},
+      //{y: 4, x: 6},
+      //{y: 4, x: 7}
+    ];
+
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
+
   it('movePiece should return a new Board with the updated pieces', function() {
     var expectedBoard = new Board({
       size: 8,

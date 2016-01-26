@@ -138,6 +138,13 @@ var getCaptures = curry(function(board, piece) {
   return filter(getPieceAtPosition(board, color), getMoves(board, piece));
 });
 
+//  getDefends :: (Board, Piece) -> [Position]
+var getDefends = curry(function(board, piece) {
+  check(arguments, [Board, Piece]);
+  var color = piece.color === 'white' ? 'black' : 'white';
+  return filter(getPieceAtPosition(board, piece.color), getMoves(board, Piece.of(evolve({color: always(color)}, piece))));
+});
+
 var pieceCallbacks = {
   teleporter: {
     // onCapture :: (Piece, Piece, Piece, Board) -> Board
@@ -410,6 +417,7 @@ module.exports = {
   movePiece: movePiece,
   getMoves: getMoves,
   getCaptures: getCaptures,
+  getDefends: getDefends,
   addPiece: addPiece,
   getPieceAtPosition: getPieceAtPosition,
   makePly: makePly,
