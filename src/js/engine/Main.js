@@ -253,7 +253,8 @@ var customMovement = {
     // TODO: filter out current piece's position as well.
     return filter(function(pos) {
       var p = getAnyPieceAtPosition(board, pos)
-      return (not(p) || prop('color', p || {color: null}) === piece.color);
+      return (not(p) || (not(equals(p, piece)) &&
+              prop('color', p || {color: null}) === piece.color));
     }, positions);
   }
 }
