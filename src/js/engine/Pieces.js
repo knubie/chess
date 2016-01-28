@@ -28,19 +28,12 @@ module.exports = {
     ],
     points: 1
   },
-  'rook': {
-    parlett: [{
-      movement: '1/0',
-      distance: 'n'
-    }],
-    points: 5
-  },
   'bishop': {
     parlett: [{
       movement: '1/1',
       distance: 'n'
     }],
-    points: 3.5
+    points: 3
   },
   'knight': {
     parlett: [{
@@ -48,6 +41,13 @@ module.exports = {
       distance: '1'
     }],
     points: 3
+  },
+  'rook': {
+    parlett: [{
+      movement: '1/0',
+      distance: 'n'
+    }],
+    points: 5
   },
   'queen': {
     parlett: [
@@ -60,7 +60,7 @@ module.exports = {
         distance: 'n'
       }
     ],
-    points: 8
+    points: 9
   },
   'king': {
     parlett: [
@@ -91,7 +91,7 @@ module.exports = {
         distance: '5'
       }
     ],
-    points: 12,
+    points: 9,
     types: ['ranged']
   },
   'ranger': {
@@ -121,7 +121,7 @@ module.exports = {
         distance: '1'
       }
     ],
-    points: 5,
+    points: 2,
     // onCapture :: Piece -> Piece
     onCapture: evolve({
       // FIXME: distance is a string.
@@ -139,7 +139,7 @@ module.exports = {
         movement: '1/1'
       }
     ],
-    points: 2.5
+    points: 2
   },
   'bomber': {
     parlett: [
@@ -176,7 +176,7 @@ module.exports = {
         distance: '0'
       }
     ],
-    points: 2,
+    points: 4,
     types: ['invincible']
   },
   'mine': {
@@ -187,6 +187,19 @@ module.exports = {
       }
     ],
     points: 5
+  },
+  'thief': {
+    parlett: [
+      {
+        movement: '1/1',
+        distance: '1'
+      },
+      {
+        movement: '1/0',
+        distance: '1'
+      }
+    ],
+    points: 4
   },
   'warlord': {
     parlett: [

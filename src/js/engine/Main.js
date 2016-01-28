@@ -147,48 +147,62 @@ var getDefends = curry(function(board, piece) {
 
 var pieceCallbacks = {
   teleporter: {
-    // onCapture :: (Piece, Piece, Piece, Board) -> Board
-    onCapture: curry(function(oldPiece, piece, capturedPiece, board) {
-      return addPieceToBoard(Piece.of(evolve({
-        position: always(oldPiece.position)
-      }, capturedPiece)), board);
+    // onCapture :: (Piece, Piece, Piece, Game) -> Game
+    onCapture: curry(function(oldPiece, piece, capturedPiece, game) {
+      check(arguments, [Piece, Piece, Piece, Game]);
+      return Game.of(evolve({
+        board: addPieceToBoard(Piece.of(evolve({
+                 position: always(oldPiece.position)
+               }, capturedPiece)))
+      }, game));
     })
   },
   bloodlust: {
-    // onCapture :: (Piece, Piece, Piece, Board) -> Board
-    onCapture: curry(function(oldPiece, piece, capturedPiece, board) {
-      check(arguments, [Piece, Piece, Piece, Board]);
-      return Board.of(evolve({
-        pieces: adjust(
-                  compose(
-                    Piece.of,
-                    evolve({
-                      // TODO: Make this less ugly.
-                      parlett: map(evolve({ distance: compose(
-                                                        add(''),
-                                                        add(1),
-                                                        parseInt,
-                                                        // FIXME: why is this necessary??
-                                                        add('')) })) })),
-                  indexOf(piece, board.pieces))
-      }, board));
+    // onCapture :: (Piece, Piece, Piece, Game) -> Game
+    onCapture: curry(function(oldPiece, piece, capturedPiece, game) {
+      check(arguments, [Piece, Piece, Piece, Game]);
+      return Game.of(evolve({
+        board: compose(
+                  Board.of,
+                  evolve({
+                          pieces: adjust(
+                                    compose(
+                                      Piece.of,
+                                      evolve({
+                                        // TODO: Make this less ugly.
+                                        parlett: map(evolve({ distance: compose(
+                                                                          add(''),
+                                                                          add(1),
+                                                                          parseInt,
+                                                                          // FIXME: why is this necessary??
+                                                                          add('')) })) })),
+                                    indexOf(piece, game.board.pieces))
+                        })
+               )
+      }, game));
+
     })
   },
   shapeshifter: {
-    // onCapture :: (Piece, Piece, Board) -> Board
-    onCapture: curry(function(oldPiece, piece, capturedPiece, board) {
-      check(arguments, [Piece, Piece, Piece, Board]);
+    // onCapture :: (Piece, Piece, Game) -> Game
+    onCapture: curry(function(oldPiece, piece, capturedPiece, game) {
+      check(arguments, [Piece, Piece, Piece, Game]);
+      var board = game.board;
+      var newBoard;
       var newPiece = Piece.of(evolve({
         color: always(piece.color),
         moves: always(piece.moves),
         captures: always(piece.captures),
         parlett: always(capturedPiece.parlett)
       }, capturedPiece))
-      return Board.of(evolve({
+      newBoard = Board.of(evolve({
         pieces: adjust(
                   always(newPiece),
                   indexOf(piece, board.pieces))
       }, board));
+      return Game.of(evolve({
+        board: always(newBoard)
+      }, game));
     })
   },
   bomber: {
@@ -246,7 +260,16 @@ var pieceCallbacks = {
         resources: adjust(add(1), index) // Add one to resources of same color as piece.
       }, game));
     })
-  }
+  },
+  thief: {
+    // onCapture :: (Piece, Piece, Game) -> Game
+    onCapture: curry(function(oldPiece, piece, capturedPiece, game) {
+      var index = piece.color === 'white' ? 0 : 1;
+      return Game.of(evolve({
+        resources: adjust(add(capturedPiece.points - 1), index)
+      }, game));
+    })
+  },
 };
 var customMovement = {
   'teleporter': function(board, piece) {
@@ -281,15 +304,15 @@ var makePly = curry(function(plyType, game, opts) {
       if (equals(startingPosition, targetPosition) ||
           not(equals(piece.color, game.turn)) ||
           // movePiece returns null if it's not a valid targetPosition
-          not(movePiece(startingPosition, targetPosition, game.board))) {
+          not(movePiece(startingPosition, targetPosition, game))) {
         // TODO: Add message.
         newGame = game;
       } else {
+        //newGame = movePiece(startingPosition, targetPosition, game);
         newGame = Game.of(evolve({
-          board: movePiece(startingPosition, targetPosition),
           turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
           plys: append([startingPosition, targetPosition])
-        }, game));
+        }, movePiece(startingPosition, targetPosition, game)));
       }
       break;
     case 'ability':
@@ -331,10 +354,11 @@ var makePly = curry(function(plyType, game, opts) {
   //return afterEveryPlyCallback(piecesWithAfterEveryPlyCallbackAndColor[0], newGame);
 });
 
-//  movePiece :: (Position, Position, Board) -> Maybe Board
-var movePiece = curry(function(startingPosition, targetPosition, board) {
-  check(arguments, [Position, Position, Board]);
+//  movePiece :: (Position, Position, Game) -> Maybe Game
+var movePiece = curry(function(startingPosition, targetPosition, game) {
+  check(arguments, [Position, Position, Game]);
 
+  var board = game.board
   var piece = getAnyPieceAtPosition(board, startingPosition);
   var capturedPiece = getAnyPieceAtPosition(board, targetPosition);
   var newPosition = always(targetPosition);
@@ -345,7 +369,7 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
   //TODO implement teleporter
   var onCapture = capturedPiece &&
                   path([piece.name, 'onCapture'], pieceCallbacks) ||
-                  curry(function(oldPiece, piece, capturedPiece, board) { return board; });
+                  curry(function(oldPiece, piece, capturedPiece, game) { return game; });
   // TODO: is equality check appropriate?
   var onCaptured = capturedPiece && capturedPiece.color !== piece.color &&
                    path([capturedPiece.name, 'onCaptured'], pieceCallbacks) ||
@@ -363,10 +387,16 @@ var movePiece = curry(function(startingPosition, targetPosition, board) {
                   always(newPiece),
                   indexOf(piece, board.pieces)))
     }, board));
-    return compose(
-      onCaptured(capturedPiece),
-      onCapture(piece, newPiece, capturedPiece)
-    )(newBoard);
+    var newGame = Game.of(evolve({
+      board: always(newBoard)
+    }, game));
+    return Game.of(evolve({
+      board: onCaptured(capturedPiece)
+    }, onCapture(piece, newPiece, capturedPiece, newGame)));
+    //return compose(
+      //onCaptured(capturedPiece),
+      //onCapture(piece, newPiece, capturedPiece)
+    //)(newBoard);
   } else {
     // TODO: return message
     return null;
@@ -394,6 +424,7 @@ var addPiece = curry(function(pieces, piece) {
 
 //  addPieceToBoard :: (Piece, Board) -> Board
 var addPieceToBoard = curry(function(piece, board) {
+  check(arguments, [Piece, Board]);
   return Board.of(evolve({
     pieces: addPiece(__, piece)
   }, board));
@@ -401,6 +432,7 @@ var addPieceToBoard = curry(function(piece, board) {
 
 // draftPiece :: (Game, Piece) -> Maybe Game
 var draftPiece = curry(function(piece, game) {
+  check(arguments, [Piece, Game]);
   var index = piece.color === 'white' ? 0 : 1;
   if (piece.points <= game.resources[index]) {
     return Game.of(evolve({

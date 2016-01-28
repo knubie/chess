@@ -75,7 +75,7 @@ describe('Pieces', function() {
     });
     var actualBoard = Chess.movePiece(
       Position.of({x: 3, y: 3}), Position.of({x: 4, y: 4}),
-      board);
+      game).board;
     expect(equals(expectedBoard, actualBoard)).toBe(true);
   });
   it('Bomber should remove any piece at it\s position when captured.', function() {
@@ -94,9 +94,13 @@ describe('Pieces', function() {
         }),
       ],
     });
+    var game = new Game({
+      turn: 'white',
+      board: board
+    });
     var actualBoard = Chess.movePiece(
         Position.of({x: 2, y: 3}), Position.of({x: 3, y: 1}),
-        board);
+        game).board;
     var expectedBoard = new Board({
       size: 8,
       pieces: [ ],
@@ -371,7 +375,35 @@ describe('Pieces', function() {
         })
       ],
     });
-    var actualBoard = Chess.movePiece(board.pieces[1].position, board.pieces[0].position, board);
+    var game = new Game({
+      turn: 'white',
+      board: board
+    });
+    var actualBoard = Chess.movePiece(board.pieces[1].position, board.pieces[0].position, game).board;
     expect(actualBoard.pieces[0].parlett[0].distance).toBe('2');
+  });
+  it('Thief should gain 1 less gold than it\'s captured piece\'s worth', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        Piece.of({
+          name: 'thief',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        }),
+        Piece.of({
+          name: 'rook',
+          color: 'black',
+          position: Position.of({x: 3, y: 4})
+        })
+      ],
+    });
+    var game = new Game({
+      turn: 'white',
+      board: board,
+      resources: [0, 0]
+    });
+    var actualGame = Chess.movePiece(board.pieces[0].position, board.pieces[1].position, game);
+    expect(actualGame.resources[0]).toBe(4);
   });
 });

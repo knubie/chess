@@ -28,6 +28,9 @@ Game.of = function(x) { return new Game(x); };
 
 // Board { size :: Number, pieces :: [Piece] }
 function Board(opts) {
+  if (!opts.size) {
+    console.log(opts);
+  }
   check([opts, opts.size, opts.pieces], [Object, Number, [Piece]]);
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {
