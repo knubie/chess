@@ -115,6 +115,39 @@ var getMoves = curry(function(board, piece) {
 
   if (customMovement[piece.name]) {
     return customMovement[piece.name](board, piece);
+  } else if (piece.position.x < 0 && piece.position.y < 0) {
+    // TODO: rewrite this, baking into the Pieces.js
+    var moves = [];
+    if (piece.color === 'white') {
+      if (piece.name === 'pawn' || piece.name === 'berolina' || piece.name === 'wall') {
+        moves = flatten(map(function(y) {
+          return map(function(x) {
+            return Position.of({x: x, y: y});
+          }, range(0, board.size));
+        }, range(0, 2)));
+      } else {
+        moves = flatten(map(function(y) {
+          return map(function(x) {
+            return Position.of({x: x, y: y});
+          }, range(0, board.size));
+        }, range(0, 1)));
+      }
+    } else {
+      if (piece.name === 'pawn' || piece.name === 'berolina' || piece.name === 'wall') {
+        moves = flatten(map(function(y) {
+          return map(function(x) {
+            return Position.of({x: x, y: y});
+          }, range(0, board.size));
+        }, range(board.size - 1, board.size - 3)));
+      } else {
+        moves = flatten(map(function(y) {
+          return map(function(x) {
+            return Position.of({x: x, y: y});
+          }, range(0, board.size));
+        }, range(board.size - 1, board.size - 2)));
+      }
+    }
+    return reject(getPieceAtPosition(board, piece.color), moves);
   } else {
     return uniq(flatten(map(function(p) {
       var d = map(parseInt, p.movement.match(/(\d)\/(\d)/));

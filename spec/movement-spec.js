@@ -860,4 +860,38 @@ describe('Movement', function() {
     var expectedMoves = [ ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
+  it('getMoves of a card in hand should return the first or first and second rank.', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'pawn',
+          color: 'white',
+          position: new Position({x: 2, y: 0})
+        }),
+        new Piece({
+          name: 'queen',
+          color: 'white',
+          position: new Position({x: -1, y: -1})
+        }),
+        new Piece({
+          name: 'pawn',
+          color: 'black',
+          position: new Position({x: 2, y: 2})
+        }),
+      ],
+    });
+    var actualMoves = Chess.getMoves(board, board.pieces[1]);
+    var expectedMoves = [
+      {x: 0, y: 0},
+      {x: 1, y: 0},
+      //{x: 2, y: 0}, // White pawn
+      {x: 3, y: 0},
+      {x: 4, y: 0},
+      {x: 5, y: 0},
+      {x: 6, y: 0},
+      {x: 7, y: 0},
+    ];
+    expect(compare(expectedMoves, actualMoves)).toBe(true);
+  });
 });
