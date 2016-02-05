@@ -328,13 +328,34 @@ describe('Pieces', function() {
     });
     var game = new Game({
       turn: 'white',
+      resources: [8, 8],
+      board: board
+    });
+    var actualGame = Chess.makePly('ability', game, {
+      startingPosition: Position.of({x: 4, y: 4})
+    });
+    expect(actualGame.resources[0]).toBe(10);
+  });
+  it('Gold should not exceed MAX_GOLD', function() {
+    var board = new Board({
+      size: 8,
+      pieces: [
+        new Piece({
+          name: 'mine',
+          color: 'white',
+          position: new Position({x: 4, y: 4})
+        })
+      ],
+    });
+    var game = new Game({
+      turn: 'white',
       resources: [10, 10],
       board: board
     });
     var actualGame = Chess.makePly('ability', game, {
       startingPosition: Position.of({x: 4, y: 4})
     });
-    expect(actualGame.resources[0]).toBe(12);
+    expect(actualGame.resources[0]).toBe(10);
   });
   it('A wall cannot be captured', function() {
     var board = new Board({

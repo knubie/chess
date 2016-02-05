@@ -77,6 +77,20 @@ module.exports = {
     types: ['royal']
   },
   ///////// Custom pieces //////////
+  'warlord': {
+    parlett: [
+      {
+        movement: '1/1',
+        distance: '2'
+      },
+      {
+        movement: '1/0',
+        distance: '2'
+      }
+    ],
+    points: 8,
+    types: ['royal']
+  },
   'cannon': {
     parlett: [
       {
@@ -201,25 +215,34 @@ module.exports = {
     ],
     points: 4
   },
-  'warlord': {
-    parlett: [
-      {
-        movement: '1/1',
-        distance: '2'
-      },
-      {
-        movement: '1/0',
-        distance: '2'
-      }
-    ],
-    points: 8,
-    types: ['royal']
-  },
   'teleporter': {
     parlett: [],
     points: 3
   },
   ////////// Fairies //////////
+  'berolina': {
+    parlett: [
+      {
+        conditions: ['i', 'o'],
+        movement: '1/1',
+        direction: 'forwards',
+        distance: '2'
+      },
+      {
+        conditions: ['o'],
+        movement: '1/1',
+        direction: 'forwards',
+        distance: '1'
+      },
+      {
+        conditions: ['c'],
+        movement: '1/0',
+        direction: 'forwards',
+        distance: '1'
+      }
+    ],
+    points: 1
+  },
   'dabbaba': {
     parlett: [{
       movement: '2/0',
@@ -282,29 +305,6 @@ module.exports = {
       distance: 'n'
     }],
     points: 9
-  },
-  'berolina': {
-    parlett: [
-      {
-        conditions: ['i', 'o'],
-        movement: '1/1',
-        direction: 'forwards',
-        distance: '2'
-      },
-      {
-        conditions: ['o'],
-        movement: '1/1',
-        direction: 'forwards',
-        distance: '1'
-      },
-      {
-        conditions: ['c'],
-        movement: '1/0',
-        direction: 'forwards',
-        distance: '1'
-      }
-    ],
-    points: 2
   },
 };
 

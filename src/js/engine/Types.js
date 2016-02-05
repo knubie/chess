@@ -22,15 +22,18 @@ function Game(opts) {
   this.plys = this.plys || [];
   // resources[0] = white
   // resources[1] = black
-  this.resources = this.resources || [45, 45];
+  this.resources = this.resources || [10, 10];
+  // decks[0] = white
+  // decks[1] = black
+  this.decks = this.decks || [[], []];
+  // hands[0] = white
+  // hands[1] = black
+  this.hands = this.hands || [[], []];
 }
 Game.of = function(x) { return new Game(x); };
 
 // Board { size :: Number, pieces :: [Piece] }
 function Board(opts) {
-  if (!opts.size) {
-    console.log(opts);
-  }
   check([opts, opts.size, opts.pieces], [Object, Number, [Piece]]);
   for (k in opts) {
     if (opts.hasOwnProperty(k)) {

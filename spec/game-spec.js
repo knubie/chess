@@ -98,6 +98,19 @@ describe('Game', function() {
       }),
     ]
   });
+  it('Drawing a card from the deck into your hand should remove that card from the deck and add it to your hand', function() {
+    var game = new Game({
+      turn: 'white',
+      board: board,
+      decks: [['pawn', 'bishop', 'pawn'], []]
+    });
+    var actualGame = Chess.makePly('draw', game, {});
+    expect(actualGame.decks[0].length).toBe(2);
+    expect(actualGame.hands[0].length).toBe(1);
+    if (contains('bishop', actualGame.hands[0])) {
+      expect(contains('bishop', actualGame.decks[0])).toBe(false);
+    }
+  });
   it('Drafting a piece should reduce that users resources by the point value of the piece', function() {
     var actualGame = Chess.draftPiece(Piece.of({
                        name: 'rook',
@@ -105,17 +118,20 @@ describe('Game', function() {
                        position: new Position({x: 4, y: 2})
                      }), game);
 
+    expect(actualGame.resources[0]).toBe(5);
+  });
+  it('Drafting a piece from the users hand should remove that card from their hand', function() {
+    var game = new Game({
+      turn: 'white',
+      hands: [ ['pawn', 'bishop', 'pawn'], [] ],
+      board: board
+    });
     var actualGame = Chess.makePly('draft', game, {
       startingPosition: null,
       targetPosition: new Position({x: 4, y: 2}),
-      piece: Piece.of({
-               name: 'rook',
-               color: 'white',
-               position: new Position({x: 4, y: 2})
-             })
+      card: 0
     });
-    
-    expect(actualGame.resources[0]).toBe(40);
+    expect(equals(actualGame.hands[0], ['bishop', 'pawn'])).toBe(true);
   });
   it('Drafting a piece should add that piece to the Board\'s pieces array granted the user has enough resources to add the piece', function() {
     var actualGame = Chess.draftPiece(Piece.of({
@@ -159,6 +175,7 @@ describe('Game', function() {
   it('The afterEveryPly callbacks should fire after every ply', function() {
     var game = Game.of({
       turn: 'white',
+      resources: [8, 8],
       board: Board.of({
         size: 8,
         pieces: [
@@ -179,7 +196,7 @@ describe('Game', function() {
                                   startingPosition: Position.of({x: 4, y: 4}),
                                   targetPosition: Position.of({x: 4, y: 5})
                                 });
-    expect(newGame.resources[0]).toBe(46);
+    expect(newGame.resources[0]).toBe(9);
   });
   it('Should not change turns when a user moves a piece to its original position', function() {
     var game = Game.of({

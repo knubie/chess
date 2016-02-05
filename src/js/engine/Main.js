@@ -10,6 +10,8 @@ for (var k in R) {
   topLevel[k] = R[k];
 }
 
+var MAX_GOLD = 10;
+
 var concatAll = unapply(reduce(concat, []));
 
 //  between :: (Number, Number) -> [Number]
@@ -119,33 +121,27 @@ var getMoves = curry(function(board, piece) {
     // TODO: rewrite this, baking into the Pieces.js
     var moves = [];
     if (piece.color === 'white') {
+      var yStart = 0;
+      var yEnd = 1;
       if (piece.name === 'pawn' || piece.name === 'berolina' || piece.name === 'wall') {
-        moves = flatten(map(function(y) {
-          return map(function(x) {
-            return Position.of({x: x, y: y});
-          }, range(0, board.size));
-        }, range(0, 2)));
-      } else {
-        moves = flatten(map(function(y) {
-          return map(function(x) {
-            return Position.of({x: x, y: y});
-          }, range(0, board.size));
-        }, range(0, 1)));
+        var yEnd = 2;
       }
+      moves = flatten(map(function(y) {
+        return map(function(x) {
+          return Position.of({x: x, y: y});
+        }, range(0, board.size));
+      }, range(yStart, yEnd)));
     } else {
+      var yStart = board.size;
+      var yEnd = board.size - 1;
       if (piece.name === 'pawn' || piece.name === 'berolina' || piece.name === 'wall') {
-        moves = flatten(map(function(y) {
-          return map(function(x) {
-            return Position.of({x: x, y: y});
-          }, range(0, board.size));
-        }, range(board.size - 1, board.size - 3)));
-      } else {
-        moves = flatten(map(function(y) {
-          return map(function(x) {
-            return Position.of({x: x, y: y});
-          }, range(0, board.size));
-        }, range(board.size - 1, board.size - 2)));
+        var yEnd = board.size - 2;
       }
+      moves = flatten(map(function(y) {
+        return map(function(x) {
+          return Position.of({x: x, y: y});
+        }, range(0, board.size));
+      }, range(yEnd, yStart)));
     }
     return reject(getPieceAtPosition(board, piece.color), moves);
   } else {
@@ -280,17 +276,33 @@ var pieceCallbacks = {
       }, board));
     })
   },
+  king: {
+    // TAX
+    // Add one resource per pawn, or one
+    // TODO: rewrite this using new deck/hand system, write tests
+    ability: curry(function(piece, game) {
+      var index = piece.color === 'white' ? 0 : 1;
+      var amount = max(1, filter(where({
+        name: equals('pawn'),
+        color: equals(piece.color),
+        position: compose(gte(__, 0), prop('x'))
+      }), game.board.pieces).length + 1);
+      return Game.of(evolve({
+        resources: adjust(compose(min(MAX_GOLD), add(amount)), index) // Add one to resources of same color as piece.
+      }, game));
+    }),
+  },
   mine: {
     ability: curry(function(piece, game) {
       var index = piece.color === 'white' ? 0 : 1;
       return Game.of(evolve({
-        resources: adjust(add(1), index) // Add one to resources of same color as piece.
+        resources: adjust(compose(min(MAX_GOLD), add(1)), index) // Add one to resources of same color as piece.
       }, game));
     }),
     afterEveryPly: curry(function(game, piece) {
       var index = piece.color === 'white' ? 0 : 1;
       return Game.of(evolve({
-        resources: adjust(add(1), index) // Add one to resources of same color as piece.
+        resources: adjust(compose(min(MAX_GOLD), add(1)), index) // Add one to resources of same color as piece.
       }, game));
     })
   },
@@ -299,7 +311,7 @@ var pieceCallbacks = {
     onCapture: curry(function(oldPiece, piece, capturedPiece, game) {
       var index = piece.color === 'white' ? 0 : 1;
       return Game.of(evolve({
-        resources: adjust(add(capturedPiece.points - 1), index)
+        resources: adjust(compose(min(MAX_GOLD), add(capturedPiece.points - 1)), index)
       }, game));
     })
   },
@@ -327,8 +339,7 @@ var makePly = curry(function(plyType, game, opts) {
   //FIXME: make signature (plyType, game, piece, targetPosition
   var newGame = game
     , startingPosition = opts.startingPosition
-    , targetPosition = opts.targetPosition
-    , piece = opts.piece || getAnyPieceAtPosition(game.board, opts.startingPosition);
+    , targetPosition = opts.targetPosition;
 
   switch (plyType) {
     case 'move':
@@ -349,6 +360,7 @@ var makePly = curry(function(plyType, game, opts) {
       }
       break;
     case 'ability':
+      var piece = getAnyPieceAtPosition(game.board, startingPosition);
       if (piece.name && pieceCallbacks[piece.name] && pieceCallbacks[piece.name].ability) {
         newGame = Game.of(evolve({
           turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
@@ -357,16 +369,37 @@ var makePly = curry(function(plyType, game, opts) {
         }, pieceCallbacks[piece.name].ability(piece, game)));
       }
       break;
-    case 'draft':
-      var pieceToAdd = Piece.of(evolve({
-        position: always(Position.of(opts.targetPosition))
-      }, opts.piece));
-      newGame = draftPiece(pieceToAdd, game);
+    case 'draw':
+      var playerIndex = game.turn === 'white' ? 0 : 1;
+      var randomIndex = Math.floor(Math.random() * game.decks[playerIndex].length);
       newGame = Game.of(evolve({
+        decks: adjust(remove(randomIndex, 1), playerIndex),
+        hands: adjust(prepend(game.decks[playerIndex][randomIndex]), playerIndex),
+        //hands: adjust(remove(opts.card, 1), color),
         turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
         //FIXME: this is broken!!
         plys: append([targetPosition, targetPosition])
       }, newGame));
+
+      break;
+    case 'draft':
+      var color = game.turn === 'white' ? 0 : 1;
+      var pieceToAdd = Piece.of({
+        name: game.hands[color][opts.card],
+        color: game.turn,
+        position: Position.of(opts.targetPosition)
+      });
+      newGame = draftPiece(pieceToAdd, game);
+      if (newGame) {
+        newGame = Game.of(evolve({
+          hands: adjust(remove(opts.card, 1), color),
+          turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
+          //FIXME: this is broken!!
+          plys: append([targetPosition, targetPosition])
+        }, newGame));
+      } else {
+        return game; // TODO: return null if unsuccessful?
+      }
       break;
   }
   var piecesWithAfterEveryPlyCallback = filter(
@@ -376,9 +409,11 @@ var makePly = curry(function(plyType, game, opts) {
       prop('name')
     )
   , newGame.board.pieces);
-  var piecesWithAfterEveryPlyCallbackAndColor = filter(
+  var piecesWithAfterEveryPlyCallbackAndColor = filter(function(piece) {
+    return !(piece.position.x < 0 && piece.position.y < 0);
+  }, filter(
   propEq('color', game.turn)
-  , piecesWithAfterEveryPlyCallback);
+  , piecesWithAfterEveryPlyCallback));
 
   return reduce(function(game, piece) {
     return path([piece.name, 'afterEveryPly'], pieceCallbacks)(game, piece);
@@ -439,6 +474,7 @@ var movePiece = curry(function(startingPosition, targetPosition, game) {
 //  isGameOver :: (Board, String) -> Boolean
 var isGameOver = curry(function(board, color) {
   check(arguments, [Board, String]);
+  //TODO: check position.
   return not(any(where({
                    color: equals(color),
                    types: contains('royal')
@@ -463,13 +499,27 @@ var addPieceToBoard = curry(function(piece, board) {
   }, board));
 });
 
-// draftPiece :: (Game, Piece) -> Maybe Game
+// draftPiece :: (Piece, Game) -> Maybe Game
 var draftPiece = curry(function(piece, game) {
   check(arguments, [Piece, Game]);
   var index = piece.color === 'white' ? 0 : 1;
+
   if (piece.points <= game.resources[index]) {
     return Game.of(evolve({
       board: addPieceToBoard(piece),
+      //board: compose(
+               //Board.of,
+               //evolve({
+                 //pieces: adjust(
+                   //compose(
+                     //Piece.of,
+                     //evolve({
+                       //position: always(position)
+                     //})
+                   //), indexOf(piece, game.board.pieces)
+                 //)
+               //})
+             //),
       resources: adjust(subtract(__, piece.points), index)
     }, game));
   } else {

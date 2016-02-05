@@ -860,6 +860,8 @@ describe('Movement', function() {
     var expectedMoves = [ ];
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
+  //TODO write a test for black.
+  //TODO remove enemy occupied squares.
   it('getMoves of a card in hand should return the first or first and second rank.', function() {
     var board = new Board({
       size: 8,
