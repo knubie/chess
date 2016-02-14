@@ -861,7 +861,6 @@ describe('Movement', function() {
     expect(compare(expectedMoves, actualMoves)).toBe(true);
   });
   //TODO write a test for black.
-  //TODO remove enemy occupied squares.
   it('getMoves of a card in hand should return the first or first and second rank.', function() {
     var board = new Board({
       size: 8,
@@ -872,18 +871,13 @@ describe('Movement', function() {
           position: new Position({x: 2, y: 0})
         }),
         new Piece({
-          name: 'queen',
-          color: 'white',
-          position: new Position({x: -1, y: -1})
-        }),
-        new Piece({
           name: 'pawn',
           color: 'black',
           position: new Position({x: 2, y: 2})
         }),
       ],
     });
-    var actualMoves = Chess.getMoves(board, board.pieces[1]);
+    var actualMoves = Chess.getDraftSquares(board, 'queen', 'white');
     var expectedMoves = [
       {x: 0, y: 0},
       {x: 1, y: 0},

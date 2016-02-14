@@ -1,4 +1,3 @@
-// TODO: make moveType optional.
 var R = require('ramda');
 for (var k in R) {
   var topLevel = typeof global === 'undefined' ? window : global;
@@ -278,7 +277,6 @@ module.exports = {
         distance: '1'
       },
       {
-        moveType: 'default',
         movement: '1/1',
         distance: 'n'
       }
@@ -292,7 +290,6 @@ module.exports = {
         distance: '1'
       },
       {
-        moveType: 'default',
         movement: '1/0',
         distance: 'n'
       }
@@ -307,4 +304,3 @@ module.exports = {
     points: 9
   },
 };
-

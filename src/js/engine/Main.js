@@ -1,9 +1,11 @@
 var R        = require('ramda');
 var check    = require('./lib/type-checker').checkAll;
-var Game     = require('./Types').Game;
-var Board    = require('./Types').Board;
-var Piece    = require('./Types').Piece;
-var Position = require('./Types').Position;
+var Cards   = require('./Cards');
+var Types    = require('./Types');
+var Game     = Types.Game;
+var Board    = Types.Board;
+var Piece    = Types.Piece;
+var Position = Types.Position;
 
 for (var k in R) {
   var topLevel = typeof global === 'undefined' ? window : global;
@@ -14,12 +16,32 @@ var MAX_GOLD = 10;
 
 var concatAll = unapply(reduce(concat, []));
 
+var shuffle = function(arr) {
+  var array = arr.slice(0);
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
+//  colorToIndex :: (String) -> Number
+var colorToIndex = curry(function(color) {
+  return color === 'white' ? 0 : 1;
+
+});
 //  between :: (Number, Number) -> [Number]
 var between = curry(function(start, end) {
   check(arguments, [Number, Number]);
   return start < end ? range(start + 1, end) : range(end + 1, start);
 });
 
+//  message :: (String, Game) -> Game
+var message = curry(function(message, game) {
+  check(arguments, [String, Game]);
+  return Game.of(assoc('message', message, game));
+});
 //  isCapturable :: (Maybe(Piece)) -> Boolean
 var isCapturable = curry(function(piece) {
   // FIXME: add Maybe support
@@ -107,6 +129,37 @@ var legalPosition = curry(function(board, position) {
   return position.x >= 0 && position.x < board.size && position.y >= 0 && position.y < board.size;
 });
 
+//  getDraftSquares :: (Board, String, String) -> [Position]
+var getDraftSquares = curry(function(board, card, color) {
+  // TODO: rewrite this, baking into the Pieces.js
+  var moves = [];
+  if (color === 'white') {
+    var yStart = 0;
+    var yEnd = 1;
+    // TODO bake this into Pieces.js
+    if (card === 'pawn' || card === 'berolina' || card === 'wall') {
+      var yEnd = 2;
+    }
+    moves = flatten(map(function(y) {
+      return map(function(x) {
+        return Position.of({x: x, y: y});
+      }, range(0, board.size));
+    }, range(yStart, yEnd)));
+  } else {
+    var yStart = board.size;
+    var yEnd = board.size - 1;
+    if (card === 'pawn' || card === 'berolina' || card === 'wall') {
+      var yEnd = board.size - 2;
+    }
+    moves = flatten(map(function(y) {
+      return map(function(x) {
+        return Position.of({x: x, y: y});
+      }, range(0, board.size));
+    }, range(yEnd, yStart)));
+  }
+  return reject(getAnyPieceAtPosition(board), moves);
+});
+
 //  getMoves :: (Board, Piece) -> [Position]
 var getMoves = curry(function(board, piece) {
   check(arguments, [Board, Piece]);
@@ -117,33 +170,6 @@ var getMoves = curry(function(board, piece) {
 
   if (customMovement[piece.name]) {
     return customMovement[piece.name](board, piece);
-  } else if (piece.position.x < 0 && piece.position.y < 0) {
-    // TODO: rewrite this, baking into the Pieces.js
-    var moves = [];
-    if (piece.color === 'white') {
-      var yStart = 0;
-      var yEnd = 1;
-      if (piece.name === 'pawn' || piece.name === 'berolina' || piece.name === 'wall') {
-        var yEnd = 2;
-      }
-      moves = flatten(map(function(y) {
-        return map(function(x) {
-          return Position.of({x: x, y: y});
-        }, range(0, board.size));
-      }, range(yStart, yEnd)));
-    } else {
-      var yStart = board.size;
-      var yEnd = board.size - 1;
-      if (piece.name === 'pawn' || piece.name === 'berolina' || piece.name === 'wall') {
-        var yEnd = board.size - 2;
-      }
-      moves = flatten(map(function(y) {
-        return map(function(x) {
-          return Position.of({x: x, y: y});
-        }, range(0, board.size));
-      }, range(yEnd, yStart)));
-    }
-    return reject(getPieceAtPosition(board, piece.color), moves);
   } else {
     return uniq(flatten(map(function(p) {
       var d = map(parseInt, p.movement.match(/(\d)\/(\d)/));
@@ -175,6 +201,20 @@ var getDefends = curry(function(board, piece) {
 });
 
 var pieceCallbacks = {
+  perception: {
+    use: curry(function(game) {
+      var color = game.turn;
+      var playerIndex = colorToIndex(color);
+      var newGame = drawCard(color, game);
+      if (!newGame.message) {
+        newGame = drawCard(color, newGame);
+        if (!newGame.message) {
+          newGame = drawCard(color, newGame);
+        }
+      }
+      return newGame;
+    })
+  },
   teleporter: {
     // onCapture :: (Piece, Piece, Piece, Game) -> Game
     onCapture: curry(function(oldPiece, piece, capturedPiece, game) {
@@ -279,16 +319,14 @@ var pieceCallbacks = {
   king: {
     // TAX
     // Add one resource per pawn, or one
-    // TODO: rewrite this using new deck/hand system, write tests
     ability: curry(function(piece, game) {
       var index = piece.color === 'white' ? 0 : 1;
-      var amount = max(1, filter(where({
+      var amount = filter(where({
         name: equals('pawn'),
         color: equals(piece.color),
-        position: compose(gte(__, 0), prop('x'))
-      }), game.board.pieces).length + 1);
+      }), game.board.pieces).length;
       return Game.of(evolve({
-        resources: adjust(compose(min(MAX_GOLD), add(amount)), index) // Add one to resources of same color as piece.
+        resources: adjust(compose(min(MAX_GOLD), add(1), add(amount)), index) // Add one to resources of same color as piece.
       }, game));
     }),
   },
@@ -334,9 +372,106 @@ var customMovement = {
   }
 }
 
+//  endTurn :: (PlyType, Game) -> Game
+var endTurn = curry(function(ply, game) {
+  return Game.of(evolve({
+    turn: (turn) => { return turn === 'white' ? 'black' : 'white'; },
+    plys: append(ply)
+  }, game));
+});
+
+//  drawCardPly :: (String, Game) -> Game
+var drawCardPly = curry(function(color, game) {
+  check(arguments, [String, Game]);
+  var playerIndex = color === 'white' ? 0 : 1;
+  var randomIndex = Math.floor(Math.random() * game.decks[playerIndex].length);
+  if (not(equals(color, game.turn))) {
+    return message('It\'s not your turn!', game);
+  } else {
+    var newGame = drawCard(color, game);
+    if (!newGame.message) {
+      return endTurn(Types.DrawPly.of(), newGame);
+    } else { return newGame }
+  }
+});
+
+//  movePly :: (Piece, Position, Game) -> Game
+var movePly = curry(function(piece, position, game) {
+  check(arguments, [Piece, Position, Game]);
+  if (equals(piece.position, position) ||
+      // movePiece() already makes this check, any way we can prevent
+      // calling it again?
+      not(contains(position, getMoves(game.board, piece)))) {
+    return game;
+  } else if (not(equals(piece.color, game.turn))) {
+    return message('It\'s not your turn!', game);
+  } else {
+    var newGame = movePiece(piece.position, position, game);
+    if (newGame) {
+      return endTurn(
+          Types.MovePly.of({piece, position}),
+          newGame);
+    } else {
+      return game;
+    }
+  }
+});
+
+// (Number)
+var useCardPly = curry(function(color, card, params, game) {
+  var playerIndex = game.turn === 'white' ? 0 : 1;
+  var {positions, pieces, cards} = params;
+  if (not(equals(color, game.turn))) {
+    return message('It\'s not your turn!', game);
+  } else {
+    // TODO: rewrite this, check valid squares
+    // Create a card lookup with:
+    // points needed,
+    // params needed
+    // action (draft, etc.)
+    // Write tests
+    var name = game.hands[playerIndex][card];
+    if (Cards[name].points <= game.resources[playerIndex]) {
+      var newGame = Game.of(evolve({
+        hands: adjust(remove(card, 1), playerIndex),
+        resources: adjust(subtract(__, Cards[name].points), playerIndex)
+      }, game));
+      if (pieceCallbacks[name] && pieceCallbacks[name].use != null) {
+        newGame = pieceCallbacks[name].use(newGame)
+      } else {
+        var piece = Piece.of({
+          color: color,
+          name: game.hands[playerIndex][card],
+          position: positions[0],
+        });
+        newGame = Game.of(evolve({
+          board: addPieceToBoard(piece),
+        }, newGame));
+      }
+      if (newGame) {
+        return endTurn(Types.UseCardPly.of({card, params}), newGame);
+      }
+    } else {
+      return message('Not enough resources!', game);
+    }
+  }
+});
+
+var abilityPly = curry(function(piece, game) {
+  if (not(equals(piece.color, game.turn))) {
+    return message('It\'s not your turn!', game);
+  } else if (piece.name && pieceCallbacks[piece.name] && pieceCallbacks[piece.name].ability) {
+    var newGame = pieceCallbacks[piece.name].ability(piece, game);
+    return endTurn(
+        Types.AbilityPly.of({piece}),
+        newGame);
+  } else {
+    return game;
+  }
+});
 //  makePly :: (String, Game, Object) -> Maybe Game
 var makePly = curry(function(plyType, game, opts) {
-  //FIXME: make signature (plyType, game, piece, targetPosition
+  // TODO: check player's turn
   var newGame = game
     , startingPosition = opts.startingPosition
     , targetPosition = opts.targetPosition;
@@ -370,16 +505,16 @@ var makePly = curry(function(plyType, game, opts) {
       }
       break;
     case 'draw':
+      // opts: {
+      //   color: enum('white', 'black')
+      //
       var playerIndex = game.turn === 'white' ? 0 : 1;
       var randomIndex = Math.floor(Math.random() * game.decks[playerIndex].length);
       newGame = Game.of(evolve({
-        decks: adjust(remove(randomIndex, 1), playerIndex),
-        hands: adjust(prepend(game.decks[playerIndex][randomIndex]), playerIndex),
-        //hands: adjust(remove(opts.card, 1), color),
         turn: function(turn) { return turn === 'white' ? 'black' : 'white'; },
         //FIXME: this is broken!!
-        plys: append([targetPosition, targetPosition])
-      }, newGame));
+        plys: append('draw')
+      }, drawCard(game.turn, newGame)));
 
       break;
     case 'draft':
@@ -402,24 +537,23 @@ var makePly = curry(function(plyType, game, opts) {
       }
       break;
   }
-  var piecesWithAfterEveryPlyCallback = filter(
-    compose(
-      path(__, pieceCallbacks),
-      prepend(__, ['afterEveryPly']),
-      prop('name')
+
+  return compose(
+    // Recursively apply them to the newGame.
+    reduce(function(game, piece) {
+      return path([piece.name, 'afterEveryPly'], pieceCallbacks)(game, piece);
+    }, newGame),
+    // Filter only those of current turn.
+    filter(propEq('color', game.turn)),
+    // Get all pieces with 'afterEveryPly' callback.
+    filter(
+      compose(
+        path(__, pieceCallbacks),
+        prepend(__, ['afterEveryPly']),
+        prop('name')
+      )
     )
-  , newGame.board.pieces);
-  var piecesWithAfterEveryPlyCallbackAndColor = filter(function(piece) {
-    return !(piece.position.x < 0 && piece.position.y < 0);
-  }, filter(
-  propEq('color', game.turn)
-  , piecesWithAfterEveryPlyCallback));
-
-  return reduce(function(game, piece) {
-    return path([piece.name, 'afterEveryPly'], pieceCallbacks)(game, piece);
-  }, newGame, piecesWithAfterEveryPlyCallbackAndColor);
-
-  //return afterEveryPlyCallback(piecesWithAfterEveryPlyCallbackAndColor[0], newGame);
+  )(newGame.board.pieces);
 });
 
 //  movePiece :: (Position, Position, Game) -> Maybe Game
@@ -466,7 +600,6 @@ var movePiece = curry(function(startingPosition, targetPosition, game) {
       //onCapture(piece, newPiece, capturedPiece)
     //)(newBoard);
   } else {
-    // TODO: return message
     return null;
   }
 });
@@ -507,6 +640,7 @@ var draftPiece = curry(function(piece, game) {
   if (piece.points <= game.resources[index]) {
     return Game.of(evolve({
       board: addPieceToBoard(piece),
+      hands: adjust(remove(opts.card, 1), color),
       //board: compose(
                //Board.of,
                //evolve({
@@ -528,14 +662,34 @@ var draftPiece = curry(function(piece, game) {
   }
 });
 
+// draftPiece :: (String, Game) -> Game
+var drawCard = curry(function(color, game) {
+  var playerIndex = color === 'white' ? 0 : 1;
+  if (game.decks[playerIndex].length < 1) {
+    return message('Your deck is empty!', game);
+  } else {
+    return Game.of(evolve({
+      decks: adjust(remove(0, 1), playerIndex),
+      hands: adjust(prepend(game.decks[playerIndex][0]), playerIndex)
+    }, game));
+  }
+});
+
 module.exports = {
-  movePiece: movePiece,
-  getMoves: getMoves,
-  getCaptures: getCaptures,
-  getDefends: getDefends,
-  addPiece: addPiece,
-  getPieceAtPosition: getPieceAtPosition,
-  makePly: makePly,
-  isGameOver: isGameOver,
-  draftPiece: draftPiece,
+  movePiece,
+  getMoves,
+  getCaptures,
+  getDefends,
+  addPiece,
+  getPieceAtPosition,
+  makePly,
+  isGameOver,
+  draftPiece,
+  drawCard,
+  drawCardPly,
+  useCardPly,
+  movePly,
+  abilityPly,
+  getDraftSquares,
+  shuffle,
 };

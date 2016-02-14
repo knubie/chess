@@ -300,9 +300,10 @@ describe('Pieces', function() {
       turn: 'white',
       board: board
     });
-    var actualGame = Chess.makePly('ability', game, {
-      startingPosition: Position.of({x: 3, y: 1})
-    });
+    var actualGame = Chess.abilityPly(board.pieces[4], game);
+    //var actualGame = Chess.makePly('ability', game, {
+      //startingPosition: Position.of({x: 3, y: 1})
+    //});
     var expectedBoard = new Board({
       size: 8,
       pieces: [

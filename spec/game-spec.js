@@ -3,6 +3,7 @@ var Game     = require('../src/js/engine/Types').Game;
 var Board    = require('../src/js/engine/Types').Board;
 var Piece    = require('../src/js/engine/Types').Piece;
 var Position = require('../src/js/engine/Types').Position;
+var Types = require('../src/js/engine/Types');
 var Chess    = require('../src/js/engine/Main.js')
 for (k in R) { global[k] = R[k]; }
 
@@ -54,7 +55,7 @@ describe('Game', function() {
       })
     });
   });
-  it('Adding a piece in a position that\'s already occupied should replace that piece', function() {
+  it('Adding a piece in a position that\'s already occupied should replace that piece', () => {
     var pieces = [
       Piece.of({
         name: 'rook',
@@ -104,19 +105,42 @@ describe('Game', function() {
       board: board,
       decks: [['pawn', 'bishop', 'pawn'], []]
     });
-    var actualGame = Chess.makePly('draw', game, {});
+    var actualGame = Chess.drawCardPly('white', game);
+    expect(actualGame.turn).toBe("black");
     expect(actualGame.decks[0].length).toBe(2);
     expect(actualGame.hands[0].length).toBe(1);
-    if (contains('bishop', actualGame.hands[0])) {
-      expect(contains('bishop', actualGame.decks[0])).toBe(false);
-    }
+    expect(actualGame.hands[0][0]).toBe('pawn');
+  });
+  it('Drawing a card from an empty deck should return return a message', function() {
+    var game = new Game({
+      turn: 'black',
+      board: board,
+      decks: [['pawn', 'bishop', 'pawn'], []]
+    });
+    var actualGame = Chess.drawCardPly('black', game);
+    expect(actualGame.turn).toBe("black");
+    expect(actualGame.plys.length).toBe(game.plys.length);
+    expect(actualGame.message).toBe("Your deck is empty!");
+  });
+  it('Drawing a card when it\'s not your turn should return a message', function() {
+    var game = new Game({
+      turn: 'black',
+      board: board,
+      decks: [['pawn', 'bishop', 'pawn'], []]
+    });
+    var actualGame = Chess.drawCardPly('white', game);
+    expect(actualGame.message).toBe("It's not your turn!");
+    expect(actualGame.turn).toBe("black");
   });
   it('Drafting a piece should reduce that users resources by the point value of the piece', function() {
-    var actualGame = Chess.draftPiece(Piece.of({
-                       name: 'rook',
-                       color: 'white',
-                       position: new Position({x: 4, y: 2})
-                     }), game);
+    var game = new Game({
+      turn: 'white',
+      hands: [ ['rook', 'bishop', 'pawn'], [] ],
+      board: board
+    });
+    var actualGame = Chess.useCardPly('white', 0, {
+      positions: [new Position({x: 4, y: 0})]
+    }, game);
 
     expect(actualGame.resources[0]).toBe(5);
   });
@@ -126,19 +150,25 @@ describe('Game', function() {
       hands: [ ['pawn', 'bishop', 'pawn'], [] ],
       board: board
     });
-    var actualGame = Chess.makePly('draft', game, {
-      startingPosition: null,
-      targetPosition: new Position({x: 4, y: 2}),
-      card: 0
-    });
+    var actualGame = Chess.useCardPly('white', 0, {
+      positions: [new Position({x: 4, y: 2})]
+    }, game);
     expect(equals(actualGame.hands[0], ['bishop', 'pawn'])).toBe(true);
   });
   it('Drafting a piece should add that piece to the Board\'s pieces array granted the user has enough resources to add the piece', function() {
-    var actualGame = Chess.draftPiece(Piece.of({
-                       name: 'rook',
-                       color: 'white',
-                       position: new Position({x: 4, y: 2})
-                     }), game);
+    var game = new Game({
+      turn: 'white',
+      hands: [ ['pawn', 'bishop', 'pawn'], [] ],
+      board: board
+    });
+    var actualGame = Chess.useCardPly('white', 0, {
+      positions: [new Position({x: 4, y: 2})]
+    }, game);
+    //var actualGame = Chess.draftPiece(Piece.of({
+                       //name: 'rook',
+                       //color: 'white',
+                       //position: new Position({x: 4, y: 2})
+                     //}), game);
     
     expect(actualGame.board.pieces.length).toBe(2);
   });
@@ -166,12 +196,12 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly('move', game, {
-                                  startingPosition: Position.of({x: 4, y: 4}),
-                                  targetPosition: Position.of({x: 4, y: 5})
-                                });
+    var newGame = Chess.movePly(game.board.pieces[0], 
+                                Position.of({x: 4, y: 5}),
+                                game);
     expect(equals(newGame.turn, 'black')).toBe(true);
   });
+  // TODO: revisit this with movePly()
   it('The afterEveryPly callbacks should fire after every ply', function() {
     var game = Game.of({
       turn: 'white',
@@ -212,10 +242,9 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly('move', game, {
-                                  startingPosition: Position.of({x: 4, y: 4}),
-                                  targetPosition: Position.of({x: 4, y: 4})
-                                });
+    var newGame = Chess.movePly(game.board.pieces[0], 
+                                Position.of({x: 4, y: 4}),
+                                game);
     expect(equals(newGame.turn, 'white')).toBe(true);
   });
   it('Should only move a piece if it\'s that piece\'s turn', function() {
@@ -232,11 +261,11 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly('move', game, {
-                                  startingPosition: Position.of({x: 4, y: 4}),
-                                  targetPosition: Position.of({x: 4, y: 5})
-                                });
-    expect(equals(game, newGame)).toBe(true);
+    var newGame = Chess.movePly(game.board.pieces[0], 
+                                Position.of({x: 4, y: 5}),
+                                game);
+    expect(newGame.message).toBe("It's not your turn!");
+    expect(equals(game, dissoc('message', newGame))).toBe(true);
   });
   it('Should append a ply after a succesful turn', function() {
     var game = Game.of({
@@ -252,14 +281,17 @@ describe('Game', function() {
         ]
       })
     }); // game
-    var newGame = Chess.makePly('move', game, {
-                                  startingPosition: Position.of({x: 4, y: 4}),
-                                  targetPosition: Position.of({x: 4, y: 5})
-                                });
-    expect(equals(newGame.plys[0],
-                  [Position.of({x: 4, y: 4}),
-                   Position.of({x: 4, y: 5})]))
-      .toBe(true);
+
+    var newGame = Chess.movePly(game.board.pieces[0], 
+                                Position.of({x: 4, y: 5}),
+                                game);
+    //var newGame = Chess.makePly('move', game, {
+                                  //startingPosition: Position.of({x: 4, y: 4}),
+                                  //targetPosition: Position.of({x: 4, y: 5})
+                                //});
+    expect(is(Types.MovePly, newGame.plys[0])).toBe(true);
+    expect(equals(newGame.plys[0].piece, game.board.pieces[0])).toBe(true);
+    expect(equals(newGame.plys[0].position, Position.of({x: 4, y: 5}))).toBe(true);
   });
   it('Should not be game over if there are royals left', function() {
     var game = Game.of({
@@ -320,5 +352,15 @@ describe('Game', function() {
                                   targetPosition: Position.of({x: 4, y: 1})
                                 });
     expect(Chess.isGameOver(newGame.board, 'black')).toBe(true);
+  });
+  it("If a card's 'use' function provides a duplicate callback, it should work", function() {
+    var game = new Game({
+      turn: 'white',
+      board: board,
+      hands: [['king', 'queen', 'bishop', 'perception', 'shapeshifter'], []],
+      decks: [['pawn', 'knight', 'rook', 'rook', 'queen', 'pawn', 'bishop', 'rook', 'king'], []],
+    });
+    var newGame = Chess.useCardPly('white', 3, { }, game);
+    expect(equals(newGame.hands[0], ['rook', 'knight', 'pawn', 'king', 'queen', 'bishop', 'shapeshifter'])).toBe(true);
   });
 });
